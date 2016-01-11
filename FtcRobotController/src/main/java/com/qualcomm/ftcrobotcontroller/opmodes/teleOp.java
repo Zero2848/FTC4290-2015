@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftrightobotcontroller.opmodes;
 
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
@@ -7,12 +7,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * Created by Ethan on 1/9/16.
+ * created by Ethan on 1/9/16.
  */
 public class teleOp extends OpMode {
     DcMotor leftWheel, rightWheel, winch1, winch2, angler;
     Servo climberLeft, climberRight;
     Controller driver, operator;
+    double leftPosition =.5, rightPosition = .5;
+    final double leftTop = .97, leftBottom = .25, rightTop = .75, rightBottom = .05;
 
     @Override
     public void init() {
@@ -24,22 +26,36 @@ public class teleOp extends OpMode {
         winch2 = hardwareMap.dcMotor.get("w2");
         angler = hardwareMap.dcMotor.get("a");
         climberLeft = hardwareMap.servo.get("cl");
-        climberRight = hardwareMap.servo.get("c");
+        climberRight = hardwareMap.servo.get("right");
         driver = new Controller(gamepad1);
         operator = new Controller(gamepad2);
     }
 
     @Override
     public void loop() {
-        Tank.Motor2(leftWheel, rightWheel, driver.left_stick_y, operator.right_stick_y);
+        driver.update(gamepad1);
+        operator.update(gamepad2);
+        Tank.Motor2(leftWheel, rightWheel, driver.left_stick_y, driver.right_stick_y);
 
-        if(gamepad2.a){
-            climberLeft.setPosition(.95);
-            climberRight.setPosition(.05);
-        } else if(gamepad2.y){
-            climberLeft.setPosition(.05);
-            climberRight.setPosition(.95);
+        if(gamepad2.x && leftPosition !=leftTop){
+            leftPosition=leftTop;
+        } else if(gamepad2.b && leftPosition != leftBottom){
+            leftPosition=leftBottom;
         }
+        if(gamepad2.a && rightPosition != rightTop){
+            rightPosition=rightTop;
+        } else if(gamepad2.y && rightPosition != rightBottom){
+            rightPosition=rightBottom;
+        }
+
+        telemetry.addData("1", "left Servo:" + leftPosition);
+        telemetry.addData("2", "right Servo: " + rightPosition);
+        telemetry.addData("3", "left motor: "+ leftWheel.getCurrentPosition());
+        telemetry.addData("4", "right motor: " + rightWheel.getCurrentPosition());
+
+        climberLeft.setPosition(leftPosition);
+        climberRight.setPosition(rightPosition);
+
 
         if(gamepad1.y){
             winch1.setPower(1);
