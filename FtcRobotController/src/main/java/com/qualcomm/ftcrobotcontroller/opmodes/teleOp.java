@@ -1,4 +1,4 @@
-package com.qualcomm.ftrightobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
@@ -14,7 +14,8 @@ public class teleOp extends OpMode {
     Servo climberLeft, climberRight;
     Controller driver, operator;
     double leftPosition =.5, rightPosition = .5;
-    final double leftTop = .97, leftBottom = .25, rightTop = .75, rightBottom = .05;
+    float winchPower;
+    final double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .75, rightServoBottom = .05;
 
     @Override
     public void init() {
@@ -37,15 +38,15 @@ public class teleOp extends OpMode {
         operator.update(gamepad2);
         Tank.Motor2(leftWheel, rightWheel, driver.left_stick_y, driver.right_stick_y);
 
-        if(gamepad2.x && leftPosition !=leftTop){
-            leftPosition=leftTop;
-        } else if(gamepad2.b && leftPosition != leftBottom){
-            leftPosition=leftBottom;
+        if(gamepad2.x && leftPosition != leftServoTop){
+            leftPosition=leftServoTop;
+        } else if(gamepad2.b && leftPosition != leftServoBottom){
+            leftPosition=leftServoBottom;
         }
-        if(gamepad2.a && rightPosition != rightTop){
-            rightPosition=rightTop;
-        } else if(gamepad2.y && rightPosition != rightBottom){
-            rightPosition=rightBottom;
+        if(gamepad2.a && rightPosition != rightServoTop){
+            rightPosition=rightServoTop;
+        } else if(gamepad2.y && rightPosition != rightServoBottom){
+            rightPosition=rightServoBottom;
         }
 
         telemetry.addData("1", "left Servo:" + leftPosition);
@@ -57,16 +58,20 @@ public class teleOp extends OpMode {
         climberRight.setPosition(rightPosition);
 
 
-        if(gamepad1.y){
-            winch1.setPower(1);
-            winch2.setPower(1);
-        } else if(gamepad1.a){
-            winch1.setPower(-1);
-            winch2.setPower(-1);
-        } else {
-            winch1.setPower(0);
-            winch2.setPower(0);
+        
+        winchPower = gamepad2.right_stick_y;
+        if(Math.abs(winchPower) > 5){
+            winch1.setPower(winchPower);
+            winch2.setPower(winchPower);
         }
+
+
+        /*
+        if(Math.abs(gamepad2.left_stick_y) > 5){
+            angler.setPower(gamepad2.left_stick_y);
+        }
+        */
+
 
         if(gamepad1.b){
             angler.setPower(1);
