@@ -5,6 +5,7 @@ import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 
 /*
  * created by Ethan on 1/9/16.
@@ -13,8 +14,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class teleOp extends OpMode {
     Controller driver, operator;
     float winchPower;
-    final double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .05, rightServoBottom = .75, climberTop = .35, climberBottom = .95, stopperOn = .4, stopperOff = .9;
+    final double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .05, rightServoBottom = .75, climberTop = .95, climberBottom = .35, stopperOn = .4, stopperOff = .9;
     double leftPosition = leftServoTop, rightPosition = rightServoTop, climberPosition = climberTop, anglerPower, stopperPosition = stopperOff;
+    //final int winchCap = 10000, winchLow = -100;
+    final int winchCap = 100000000, winchLow = -100000000;
+
+    //final int anglerCap = 500, anglerLow = -500;
+    final int anglerCap = 100000000, anglerLow = -100000000;
 
     public void telemetry(){
         if(leftPosition == leftServoTop){
@@ -47,16 +53,14 @@ public class teleOp extends OpMode {
         } else {
             telemetry.addData("4", "stopper at: " + stopperPosition);
         }
-        telemetry.addData("5", " ENCODERS: ");
-        telemetry.addData("6", "left motor enc: " + hardware.leftWheel.getCurrentPosition());
-        telemetry.addData("7", "right motor enc: " + hardware.rightWheel.getCurrentPosition());
-        telemetry.addData("8", "winch1 enc: " + hardware.winch1.getCurrentPosition());
-        telemetry.addData("9", "winch2 enc: " + hardware.winch2.getCurrentPosition());
-        telemetry.addData("10", "angler enc: " + hardware.angler.getCurrentPosition());
-        telemetry.addData("11", " POWERS: ");
-        telemetry.addData("12", "winch pow: " + winchPower);
-        telemetry.addData("13", "angler pow:" + anglerPower);
-
+        telemetry.addData("5", "left motor enc: " + hardware.leftWheel.getCurrentPosition());
+        telemetry.addData("6", "right motor enc: " + hardware.rightWheel.getCurrentPosition());
+        telemetry.addData("7", "winch1 enc: " + hardware.winch1.getCurrentPosition());
+        telemetry.addData("8", "angler enc: " + hardware.angler.getCurrentPosition());
+        telemetry.addData("9", "left motor power: " + driver.left_stick_y);
+        telemetry.addData("10", "right motor power: " + driver.right_stick_y);
+        telemetry.addData("11", "winch pow: " + winchPower);
+        telemetry.addData("12", "angler pow:" + anglerPower);
     }
 
     @Override
@@ -75,12 +79,17 @@ public class teleOp extends OpMode {
         hardware.climber = hardwareMap.servo.get("c");
         driver = new Controller(gamepad1);
         operator = new Controller(gamepad2);
+        hardware.angler.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        hardware.winch1.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
     }
 
     @Override
     public void loop() {
         driver.update(gamepad1);
         operator.update(gamepad2);
+
+        hardware.winch1.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        hardware.angler.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 
         if(operator.y == ButtonState.PRESSED && climberPosition != climberTop) {
             climberPosition=climberTop;
@@ -100,12 +109,26 @@ public class teleOp extends OpMode {
         }
 
         if(Math.abs(operator.right_stick_y) > .05) {
-            winchPower = operator.right_stick_y;
+            if(hardware.winch1.getCurrentPosition() < winchCap && operator.right_stick_y > 0){
+                winchPower = operator.right_stick_y;
+            }
+            else if(hardware.winch1.getCurrentPosition() < winchLow && operator.right_stick_y < 0){
+                winchPower = operator.right_stick_y;
+            } else {
+                winchPower = 0;
+            }
         } else {
             winchPower = 0;
         }
         if(Math.abs(operator.left_stick_y) > .05) {
-            anglerPower = operator.left_stick_y;
+            if(hardware.angler.getCurrentPosition() < anglerCap && operator.left_stick_y > 0){
+                anglerPower = operator.left_stick_y;
+            }
+            else if(hardware.angler.getCurrentPosition() < anglerLow && operator.left_stick_y < 0){
+                anglerPower = operator.left_stick_y;
+            } else {
+                anglerPower = 0;
+            }
         } else {
             anglerPower = 0;
         }

@@ -22,11 +22,11 @@ public class auto extends LinearOpMode {
         hardware.climberRight = hardwareMap.servo.get("cr");
     }
 
-
     public void driveTo(double inches, double powerLeft, double powerRight){
         int speedMod = 1;
         String lastIn = "<";
-        ticks*=1000;
+        double ticks = (inches / 12) * 1000;
+        double speedModAmount = .5;
         hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
         metric = hardware.rightWheel.getCurrentPosition();
         hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
