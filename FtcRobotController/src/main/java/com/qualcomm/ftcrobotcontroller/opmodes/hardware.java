@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
 /**
  * Created by Ethan on 1/12/16.
  */
@@ -12,16 +11,8 @@ public class hardware extends OpMode{
 
     public static DcMotor leftWheel, rightWheel, winch1, winch2, angler;
     public static Servo climberLeft, climberRight, stopper, climber;
-    /*
-    public static void declare(){
 
-
-        /
-???????????????????????????????????
-        TODO: make global
-???????????????????????????????????
-
-
+    public void declare(){
         leftWheel = hardwareMap.dcMotor.get("l");
         leftWheel.setDirection(DcMotor.Direction.REVERSE);
         rightWheel = hardwareMap.dcMotor.get("r");
@@ -33,11 +24,11 @@ public class hardware extends OpMode{
         climberRight = hardwareMap.servo.get("cr");
         stopper = hardwareMap.servo.get("s");
     }
-    */
+
 
     @Override
     public void init() {
-
+        declare();
     }
 
     @Override

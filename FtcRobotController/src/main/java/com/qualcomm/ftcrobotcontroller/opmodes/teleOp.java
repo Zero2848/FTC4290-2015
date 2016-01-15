@@ -5,11 +5,11 @@ import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 /*
  * created by Ethan on 1/9/16.
  */
+
 public class teleOp extends OpMode {
     Controller driver, operator;
     float winchPower;
@@ -82,40 +82,39 @@ public class teleOp extends OpMode {
         driver.update(gamepad1);
         operator.update(gamepad2);
 
-        if(operator.y == ButtonState.PRESSED && climberPosition != climberTop){
+        if(operator.y == ButtonState.PRESSED && climberPosition != climberTop) {
             climberPosition=climberTop;
-        } else if(operator.y == ButtonState.PRESSED && climberPosition != climberBottom){
+        } else if(operator.y == ButtonState.PRESSED && climberPosition != climberBottom) {
             climberPosition=climberBottom;
         }
 
-        if(operator.x  == ButtonState.PRESSED && leftPosition != leftServoTop){
+        if(operator.x  == ButtonState.PRESSED && leftPosition != leftServoTop) {
             leftPosition=leftServoTop;
-        } else if(operator.x == ButtonState.PRESSED && leftPosition != leftServoBottom){
+        } else if(operator.x == ButtonState.PRESSED && leftPosition != leftServoBottom) {
             leftPosition=leftServoBottom;
         }
-        if(operator.b == ButtonState.PRESSED && rightPosition != rightServoTop){
+        if(operator.b == ButtonState.PRESSED && rightPosition != rightServoTop) {
             rightPosition=rightServoTop;
-        } else if(operator.b == ButtonState.PRESSED && rightPosition != rightServoBottom){
+        } else if(operator.b == ButtonState.PRESSED && rightPosition != rightServoBottom) {
             rightPosition=rightServoBottom;
         }
 
-        if(Math.abs(operator.right_stick_y) > .05){
+        if(Math.abs(operator.right_stick_y) > .05) {
             winchPower = operator.right_stick_y;
-        }else{
+        } else {
             winchPower = 0;
         }
-        if(Math.abs(operator.left_stick_y) > .05){
+        if(Math.abs(operator.left_stick_y) > .05) {
             anglerPower = operator.left_stick_y;
-        }else{
+        } else {
             anglerPower = 0;
         }
 
-        if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOn){
+        if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOn) {
             stopperPosition = stopperOn;
-        } else if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOff){
+        } else if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOff) {
             stopperPosition = stopperOff;
         }
-
 
         hardware.stopper.setPosition(stopperPosition);
         hardware.climber.setPosition(climberPosition);
