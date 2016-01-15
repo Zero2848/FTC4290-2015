@@ -12,13 +12,15 @@ public class hardware extends OpMode{
 
     public static DcMotor leftWheel, rightWheel, winch1, winch2, angler;
     public static Servo climberLeft, climberRight, stopper, climber;
-    public void declare(){
+    /*
+    public static void declare(){
 
-        /*
+
+        /
 ???????????????????????????????????
         TODO: make global
 ???????????????????????????????????
-        */
+
 
         leftWheel = hardwareMap.dcMotor.get("l");
         leftWheel.setDirection(DcMotor.Direction.REVERSE);
@@ -31,6 +33,7 @@ public class hardware extends OpMode{
         climberRight = hardwareMap.servo.get("cr");
         stopper = hardwareMap.servo.get("s");
     }
+    */
 
     @Override
     public void init() {

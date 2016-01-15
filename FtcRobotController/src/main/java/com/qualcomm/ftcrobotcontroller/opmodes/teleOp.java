@@ -13,8 +13,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class teleOp extends OpMode {
     Controller driver, operator;
     float winchPower;
-    final double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .75, rightServoBottom = .05, climberTop = .25, climberBottom = .75, stopperOn = .05, stopperOff = .25;
-    double leftPosition = leftServoTop, rightPosition = rightServoTop, climberPosition = climberTop, anglerPower, stopperPosition;
+    final double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .05, rightServoBottom = .75, climberTop = .35, climberBottom = .95, stopperOn = .4, stopperOff = .9;
+    double leftPosition = leftServoTop, rightPosition = rightServoTop, climberPosition = climberTop, anglerPower, stopperPosition = stopperOff;
 
     public void telemetry(){
         if(leftPosition == leftServoTop){
@@ -44,11 +44,18 @@ public class teleOp extends OpMode {
             telemetry.addData("4", "stopper is on");
         } else if(stopperPosition == stopperOff){
             telemetry.addData("4", "stopper is off");
+        } else {
+            telemetry.addData("4", "stopper at: " + stopperPosition);
         }
-        telemetry.addData("5", "left motor: " + hardware.leftWheel.getCurrentPosition());
-        telemetry.addData("6", "right motor: " + hardware.rightWheel.getCurrentPosition());
-        telemetry.addData("7", "winch power: " + winchPower);
-        telemetry.addData("8", "angler power:" + anglerPower);
+        telemetry.addData("5", " ENCODERS: ");
+        telemetry.addData("6", "left motor enc: " + hardware.leftWheel.getCurrentPosition());
+        telemetry.addData("7", "right motor enc: " + hardware.rightWheel.getCurrentPosition());
+        telemetry.addData("8", "winch1 enc: " + hardware.winch1.getCurrentPosition());
+        telemetry.addData("9", "winch2 enc: " + hardware.winch2.getCurrentPosition());
+        telemetry.addData("10", "angler enc: " + hardware.angler.getCurrentPosition());
+        telemetry.addData("11", " POWERS: ");
+        telemetry.addData("12", "winch pow: " + winchPower);
+        telemetry.addData("13", "angler pow:" + anglerPower);
 
     }
 
@@ -61,6 +68,7 @@ public class teleOp extends OpMode {
         hardware.winch1.setDirection(DcMotor.Direction.REVERSE);
         hardware.winch2 = hardwareMap.dcMotor.get("w2");
         hardware.angler = hardwareMap.dcMotor.get("a");
+        hardware.angler.setDirection(DcMotor.Direction.REVERSE);
         hardware.climberLeft = hardwareMap.servo.get("cl");
         hardware.climberRight = hardwareMap.servo.get("cr");
         hardware.stopper = hardwareMap.servo.get("s");
@@ -73,8 +81,6 @@ public class teleOp extends OpMode {
     public void loop() {
         driver.update(gamepad1);
         operator.update(gamepad2);
-
-        Tank.Motor2(hardware.leftWheel, hardware.rightWheel, driver.left_stick_y, driver.right_stick_y);
 
         if(operator.y == ButtonState.PRESSED && climberPosition != climberTop){
             climberPosition=climberTop;
@@ -98,6 +104,11 @@ public class teleOp extends OpMode {
         }else{
             winchPower = 0;
         }
+        if(Math.abs(operator.left_stick_y) > .05){
+            anglerPower = operator.left_stick_y;
+        }else{
+            anglerPower = 0;
+        }
 
         if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOn){
             stopperPosition = stopperOn;
@@ -105,25 +116,17 @@ public class teleOp extends OpMode {
             stopperPosition = stopperOff;
         }
 
-        if(operator.dpad_up == ButtonState.PRESSED){
-            anglerPower = 1;
-        } else if(operator.dpad_down == ButtonState.PRESSED){
-            anglerPower = -1;
-        } else {
-            anglerPower = 0;
-        }
-
-        hardware.angler.setPower(anglerPower);
 
         hardware.stopper.setPosition(stopperPosition);
-
         hardware.climber.setPosition(climberPosition);
-
         hardware.climberLeft.setPosition(leftPosition);
         hardware.climberRight.setPosition(rightPosition);
 
         hardware.winch1.setPower(winchPower);
         hardware.winch2.setPower(winchPower);
+        hardware.angler.setPower(anglerPower);
+        Tank.Motor2(hardware.leftWheel, hardware.rightWheel, driver.left_stick_y, driver.right_stick_y);
+
 
         telemetry();
     }
