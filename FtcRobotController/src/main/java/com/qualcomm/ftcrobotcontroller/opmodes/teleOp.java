@@ -19,6 +19,7 @@ public class teleOp extends OpMode {
     //final int winchCap = 10000, winchLow = -100;
     final int winchCap = 100000000, winchLow = -100000000;
 
+
     //final int anglerCap = 500, anglerLow = -500;
     final int anglerCap = 100000000, anglerLow = -100000000;
 
@@ -51,16 +52,17 @@ public class teleOp extends OpMode {
         } else if(stopperPosition == stopperOff){
             telemetry.addData("4", "stopper is off");
         } else {
-            telemetry.addData("4", "stopper at: " + stopperPosition);
+            telemetry.addData("4", "no stopper");
         }
         telemetry.addData("5", "left motor enc: " + hardware.leftWheel.getCurrentPosition());
         telemetry.addData("6", "right motor enc: " + hardware.rightWheel.getCurrentPosition());
         telemetry.addData("7", "winch1 enc: " + hardware.winch1.getCurrentPosition());
-        telemetry.addData("8", "angler enc: " + hardware.angler.getCurrentPosition());
-        telemetry.addData("9", "left motor power: " + driver.left_stick_y);
-        telemetry.addData("10", "right motor power: " + driver.right_stick_y);
-        telemetry.addData("11", "winch pow: " + winchPower);
-        telemetry.addData("12", "angler pow:" + anglerPower);
+        telemetry.addData("8", "winch2 enc: " + hardware.winch2.getCurrentPosition());
+        telemetry.addData("9", "angler enc: " + hardware.angler.getCurrentPosition());
+        telemetry.addData("10", "left motor power: " + driver.left_stick_y);
+        telemetry.addData("11", "right motor power: " + driver.right_stick_y);
+        telemetry.addData("12", "winch pow: " + winchPower);
+        telemetry.addData("13", "angler pow:" + anglerPower);
     }
 
     @Override
@@ -81,6 +83,7 @@ public class teleOp extends OpMode {
         operator = new Controller(gamepad2);
         hardware.angler.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
         hardware.winch1.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        hardware.winch2.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
     }
 
     @Override
@@ -89,6 +92,7 @@ public class teleOp extends OpMode {
         operator.update(gamepad2);
 
         hardware.winch1.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        hardware.winch2.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         hardware.angler.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 
         if(operator.y == ButtonState.PRESSED && climberPosition != climberTop) {
@@ -108,11 +112,17 @@ public class teleOp extends OpMode {
             rightPosition=rightServoBottom;
         }
 
-        if(Math.abs(operator.right_stick_y) > .05) {
-            if(hardware.winch1.getCurrentPosition() < winchCap && operator.right_stick_y > 0){
+        if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOn) {
+            stopperPosition = stopperOn;
+        } else if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOff) {
+            stopperPosition = stopperOff;
+        }
+
+        if(Math.abs(operator.right_stick_y) > .05 && stopperPosition != stopperOn) {
+            if(hardware.winch2.getCurrentPosition() < winchCap && operator.right_stick_y > 0){
                 winchPower = operator.right_stick_y;
             }
-            else if(hardware.winch1.getCurrentPosition() < winchLow && operator.right_stick_y < 0){
+            else if(hardware.winch2.getCurrentPosition() > winchLow && operator.right_stick_y < 0){
                 winchPower = operator.right_stick_y;
             } else {
                 winchPower = 0;
@@ -124,7 +134,7 @@ public class teleOp extends OpMode {
             if(hardware.angler.getCurrentPosition() < anglerCap && operator.left_stick_y > 0){
                 anglerPower = operator.left_stick_y;
             }
-            else if(hardware.angler.getCurrentPosition() < anglerLow && operator.left_stick_y < 0){
+            else if(hardware.angler.getCurrentPosition() > anglerLow && operator.left_stick_y < 0){
                 anglerPower = operator.left_stick_y;
             } else {
                 anglerPower = 0;
@@ -133,11 +143,6 @@ public class teleOp extends OpMode {
             anglerPower = 0;
         }
 
-        if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOn) {
-            stopperPosition = stopperOn;
-        } else if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOff) {
-            stopperPosition = stopperOff;
-        }
 
         hardware.stopper.setPosition(stopperPosition);
         hardware.climber.setPosition(climberPosition);

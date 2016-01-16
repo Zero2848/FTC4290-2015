@@ -68,7 +68,9 @@ public class auto extends LinearOpMode {
         declare();
         waitForStart();
         telemetry.addData("1", "start");
-        driveTo(-75, .25, .25); //backwards towards the mountain
+        driveTo(-75, .5, .5); //backwards towards the mountain
         telemetry.addData("5", "distance done");
+        driveTo(-12, -.5, .5);
+        telemetry.addData("6", "turn done");
     }
 }
