@@ -14,8 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 public class teleOp extends OpMode {
     Controller driver, operator;
     float winchPower;
-    final double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .05, rightServoBottom = .75, climberTop = .95, climberBottom = .35, stopperOn = .4, stopperOff = .9;
-    double leftPosition = leftServoTop, rightPosition = rightServoTop, climberPosition = climberTop, anglerPower, stopperPosition = stopperOff;
+    double leftPosition = hardware.leftServoTop, rightPosition = hardware.rightServoTop, climberPosition = hardware.climberTop, anglerPower, stopperPosition = hardware.stopperOff;
     //final int winchCap = 10000, winchLow = -100;
     final int winchCap = 100000000, winchLow = -100000000;
 
@@ -24,32 +23,32 @@ public class teleOp extends OpMode {
     final int anglerCap = 100000000, anglerLow = -100000000;
 
     public void telemetry(){
-        if(leftPosition == leftServoTop){
+        if(leftPosition == hardware.leftServoTop){
             telemetry.addData("1", "left is off");
-        } else if(leftPosition == leftServoBottom){
+        } else if(leftPosition == hardware.leftServoBottom){
             telemetry.addData("1", "left is on");
         } else {
             telemetry.addData("1", "no left servo");
         }
 
-        if(rightPosition == rightServoTop){
+        if(rightPosition == hardware.rightServoTop){
             telemetry.addData("2", "right is off");
-        } else if(rightPosition == rightServoBottom){
+        } else if(rightPosition == hardware.rightServoBottom){
             telemetry.addData("2", "right is on");
         } else {
             telemetry.addData("2", "no right servo");
         }
 
-        if(climberPosition == climberBottom){
+        if(climberPosition == hardware.climberBottom){
             telemetry.addData("3", "climber is off");
-        } else if(climberPosition == climberTop){
+        } else if(climberPosition == hardware.climberTop){
             telemetry.addData("3", "climber is on");
         } else {
             telemetry.addData("3", "no climber servo");
         }
-        if(stopperPosition == stopperOn){
+        if(stopperPosition == hardware.stopperOn){
             telemetry.addData("4", "stopper is on");
-        } else if(stopperPosition == stopperOff){
+        } else if(stopperPosition == hardware.stopperOff){
             telemetry.addData("4", "stopper is off");
         } else {
             telemetry.addData("4", "no stopper");
@@ -95,30 +94,30 @@ public class teleOp extends OpMode {
         hardware.winch2.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         hardware.angler.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 
-        if(operator.y == ButtonState.PRESSED && climberPosition != climberTop) {
-            climberPosition=climberTop;
-        } else if(operator.y == ButtonState.PRESSED && climberPosition != climberBottom) {
-            climberPosition=climberBottom;
+        if(operator.y == ButtonState.PRESSED && climberPosition != hardware.climberTop) {
+            climberPosition=hardware.climberTop;
+        } else if(operator.y == ButtonState.PRESSED && climberPosition != hardware.climberBottom) {
+            climberPosition=hardware.climberBottom;
         }
 
-        if(operator.x  == ButtonState.PRESSED && leftPosition != leftServoTop) {
-            leftPosition=leftServoTop;
-        } else if(operator.x == ButtonState.PRESSED && leftPosition != leftServoBottom) {
-            leftPosition=leftServoBottom;
+        if(operator.x  == ButtonState.PRESSED && leftPosition != hardware.leftServoTop) {
+            leftPosition=hardware.leftServoTop;
+        } else if(operator.x == ButtonState.PRESSED && leftPosition != hardware.leftServoBottom) {
+            leftPosition=hardware.leftServoBottom;
         }
-        if(operator.b == ButtonState.PRESSED && rightPosition != rightServoTop) {
-            rightPosition=rightServoTop;
-        } else if(operator.b == ButtonState.PRESSED && rightPosition != rightServoBottom) {
-            rightPosition=rightServoBottom;
-        }
-
-        if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOn) {
-            stopperPosition = stopperOn;
-        } else if(operator.a == ButtonState.PRESSED && stopperPosition != stopperOff) {
-            stopperPosition = stopperOff;
+        if(operator.b == ButtonState.PRESSED && rightPosition != hardware.rightServoTop) {
+            rightPosition=hardware.rightServoTop;
+        } else if(operator.b == ButtonState.PRESSED && rightPosition != hardware.rightServoBottom) {
+            rightPosition=hardware.rightServoBottom;
         }
 
-        if(Math.abs(operator.right_stick_y) > .05 && stopperPosition != stopperOn) {
+        if(operator.a == ButtonState.PRESSED && stopperPosition != hardware.stopperOn) {
+            stopperPosition = hardware.stopperOn;
+        } else if(operator.a == ButtonState.PRESSED && stopperPosition != hardware.stopperOff) {
+            stopperPosition = hardware.stopperOff;
+        }
+
+        if(Math.abs(operator.right_stick_y) > .05 && stopperPosition != hardware.stopperOn) {
             if(hardware.winch2.getCurrentPosition() < winchCap && operator.right_stick_y > 0){
                 winchPower = operator.right_stick_y;
             }
