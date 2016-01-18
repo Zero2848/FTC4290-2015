@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 /**
  * Created by Ethan on 1/12/16.
  */
-public class auto extends LinearOpMode {
+public class redDump extends LinearOpMode {
     int wheelPosition;
 
     public void declare(){
@@ -66,20 +66,30 @@ public class auto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         declare();
-        hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-        waitOneFullHardwareCycle();
-        waitForNextHardwareCycle();
+        while (hardware.rightWheel.getCurrentPosition() != 0){
+            hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        }//gives hardware the time to reset
         hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        hardware.climber.setPosition(hardware.climberBottom);
+        hardware.climberRight.setPosition(hardware.rightServoTop);
+        hardware.climberLeft.setPosition(hardware.leftServoTop);
+        hardware.stopper.setPosition(hardware.stopperOff);
+        waitOneFullHardwareCycle();
+
+        //WON'T INIT SERVOS, WHY??
+
         waitForStart();
-        driveDist(18, .25, .25);
-//      driveTo(1500, .25, .25); //backwards towards the mountain
-        stopDrive();
-        telemetry.addData("5", "distance done");
 
-        //driveAng(90, -.2, .2);
-//      driveTo(3000, -.1, .1);  //turns 90 left
-
+        driveDist(-81, .2, .2);
+        telemetry.addData("1", "STATUS: DRIVEN");
         stopDrive();
-        telemetry.addData("6", "turn done");
+
+
+        driveAng(-50, -.2, .2);//left
+        telemetry.addData("1", "STATUS: Turned");
+        stopDrive();
+        hardware.climber.setPosition(hardware.climberBottom);
+        waitOneFullHardwareCycle();
+        hardware.climber.setPosition(hardware.climberTop);
     }
 }

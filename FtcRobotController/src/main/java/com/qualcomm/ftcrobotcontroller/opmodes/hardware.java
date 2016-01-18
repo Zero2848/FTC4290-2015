@@ -11,6 +11,8 @@ public class hardware extends OpMode{
 
     public static DcMotor leftWheel, rightWheel, winch1, winch2, angler;
     public static Servo climberLeft, climberRight, stopper, climber;
+    public static double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .05, rightServoBottom = .75, climberTop = .95, climberBottom = .35, stopperOn = .4, stopperOff = .9;
+
 
     public void declare(){
         leftWheel = hardwareMap.dcMotor.get("l");
