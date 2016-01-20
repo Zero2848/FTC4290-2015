@@ -4,11 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 /**
  * Created by Ethan on 1/12/16.
  */
@@ -80,12 +75,16 @@ public class redDump extends LinearOpMode {
         hardware.rightWheel.setPower(0);
         hardware.leftWheel.setPower(0);
     }
+    public void moveArm() throws InterruptedException {
+        for(double i  = hardware.climberBottom; i < hardware.climberTop; i-=.01){
+            hardware.climber.setPosition(i);
+            sleep(750);
+        }
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
         declare();
-
-
         waitForStart();
 
         driveDist(-81, .2, .2);
@@ -95,8 +94,6 @@ public class redDump extends LinearOpMode {
         driveAng(-50, -.2, .2);//left
         telemetry.addData("4", "STATUS: Turned");
         stopDrive();
-        hardware.climber.setPosition(hardware.climberBottom);
-        waitOneFullHardwareCycle();
-        hardware.climber.setPosition(hardware.climberTop);
+        moveArm();
     }
 }

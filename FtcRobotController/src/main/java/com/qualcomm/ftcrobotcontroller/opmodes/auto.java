@@ -4,11 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 /**
  * Created by Ethan on 1/12/16.
  */
@@ -42,6 +37,7 @@ public class auto extends LinearOpMode {
         waitOneFullHardwareCycle();
     }
     public void driveTo(int ticks, double powerLeft, double powerRight) throws InterruptedException {
+        double wheelPosition =  0;
         while(wheelPosition != ticks) {
             wheelPosition = hardware.rightWheel.getCurrentPosition();
             telemetry.addData("1", "wheel at: " + wheelPosition + " ticks.");
@@ -79,6 +75,11 @@ public class auto extends LinearOpMode {
         hardware.rightWheel.setPower(0);
         hardware.leftWheel.setPower(0);
     }
+    public static void moveArm() {
+        for(double i  = hardware.climberBottom; i < hardware.climberTop; i-=.01){
+            hardware.climber.setPosition(i);
+        }
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -88,10 +89,7 @@ public class auto extends LinearOpMode {
         waitForNextHardwareCycle();
         hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         waitForStart();
-        hardware.climber.setPosition(0.5);
-        sleep(2000);
-        hardware.climber.setPosition(0.8);
+        moveArm();
     }
-
 
 }

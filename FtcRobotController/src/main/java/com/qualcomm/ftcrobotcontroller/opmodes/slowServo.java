@@ -13,6 +13,6 @@ public class slowServo extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         hardware.climber = hardwareMap.servo.get("c");
         waitForStart();
-        hardware.climber.setPosition(.45);
+        auto.moveArm();
     }
 }
