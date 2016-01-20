@@ -5,24 +5,25 @@ import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 
-/*
- * created by Ethan on 1/9/16.
+import com.qualcomm.ftcrobotcontroller.opmodes.hardware.*;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+/**
+ * Created by Ethan on 1/12/16.
  */
 
 public class teleOp extends OpMode {
     Controller driver, operator;
     float winchPower;
     double leftPosition = hardware.leftServoTop, rightPosition = hardware.rightServoTop, climberPosition = hardware.climberTop, anglerPower, stopperPosition = hardware.stopperOff;
-    //final int winchCap = 10000, winchLow = -100;
-    final int winchCap = 100000000, winchLow = -100000000;
 
 
-    //final int anglerCap = 500, anglerLow = -500;
-    final int anglerCap = 100000000, anglerLow = -100000000;
-
-    public void telemetry(){
+    public void displayTelemetry(){
         if(leftPosition == hardware.leftServoTop){
             telemetry.addData("1", "left is off");
         } else if(leftPosition == hardware.leftServoBottom){
@@ -63,6 +64,9 @@ public class teleOp extends OpMode {
         telemetry.addData("12", "winch pow: " + winchPower);
         telemetry.addData("13", "angler pow:" + anglerPower);
     }
+    /*public void displayTelemetry(){
+        telemetry.addData("1", "power:" + winchPower);
+    }*/
 
     @Override
     public void init() {
@@ -80,19 +84,14 @@ public class teleOp extends OpMode {
         hardware.climber = hardwareMap.servo.get("c");
         driver = new Controller(gamepad1);
         operator = new Controller(gamepad2);
-        hardware.angler.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-        hardware.winch1.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-        hardware.winch2.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        hardware.angler.setDirection(DcMotor.Direction.REVERSE);
+
     }
 
     @Override
     public void loop() {
         driver.update(gamepad1);
         operator.update(gamepad2);
-
-        hardware.winch1.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        hardware.winch2.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        hardware.angler.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 
         if(operator.y == ButtonState.PRESSED && climberPosition != hardware.climberTop) {
             climberPosition=hardware.climberTop;
@@ -118,10 +117,10 @@ public class teleOp extends OpMode {
         }
 
         if(Math.abs(operator.right_stick_y) > .05 && stopperPosition != hardware.stopperOn) {
-            if(hardware.winch2.getCurrentPosition() < winchCap && operator.right_stick_y > 0){
+            if(hardware.winch2.getCurrentPosition() < hardware.winchCap && operator.right_stick_y > 0){
                 winchPower = operator.right_stick_y;
             }
-            else if(hardware.winch2.getCurrentPosition() > winchLow && operator.right_stick_y < 0){
+            else if(hardware.winch2.getCurrentPosition() > hardware.winchLow && operator.right_stick_y < 0){
                 winchPower = operator.right_stick_y;
             } else {
                 winchPower = 0;
@@ -130,10 +129,10 @@ public class teleOp extends OpMode {
             winchPower = 0;
         }
         if(Math.abs(operator.left_stick_y) > .05) {
-            if(hardware.angler.getCurrentPosition() < anglerCap && operator.left_stick_y > 0){
+            if(hardware.angler.getCurrentPosition() < hardware.anglerCap && operator.left_stick_y > 0){
                 anglerPower = operator.left_stick_y;
             }
-            else if(hardware.angler.getCurrentPosition() > anglerLow && operator.left_stick_y < 0){
+            else if(hardware.angler.getCurrentPosition() > hardware.anglerLow && operator.left_stick_y < 0){
                 anglerPower = operator.left_stick_y;
             } else {
                 anglerPower = 0;
@@ -154,6 +153,7 @@ public class teleOp extends OpMode {
         Tank.Motor2(hardware.leftWheel, hardware.rightWheel, driver.left_stick_y, driver.right_stick_y);
 
 
-        telemetry();
+        displayTelemetry();
     }
+
 }
