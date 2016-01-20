@@ -88,14 +88,9 @@ public class auto extends LinearOpMode {
         waitForNextHardwareCycle();
         hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         waitForStart();
-        driveDist(18, .25, .25);
-//      driveTo(1500, .25, .25); //backwards towards the mountain
-        stopDrive();
-
-        //driveAng(90, -.2, .2);
-//      driveTo(3000, -.1, .1);  //turns 90 left
-
-        stopDrive();
+        hardware.climber.setPosition(0.5);
+        sleep(2000);
+        hardware.climber.setPosition(0.8);
     }
 
 

@@ -128,19 +128,19 @@ public class teleOp extends OpMode {
         } else {
             winchPower = 0;
         }
-        if(Math.abs(operator.left_stick_y) > .05) {
-            if(hardware.angler.getCurrentPosition() < hardware.anglerCap && operator.left_stick_y > 0){
-                anglerPower = operator.left_stick_y;
+        if(driver.right_bumper == ButtonState.PRESSED) {
+            if (hardware.angler.getCurrentPosition() < hardware.anglerCap) {
+                anglerPower += 0.1;
             }
-            else if(hardware.angler.getCurrentPosition() > hardware.anglerLow && operator.left_stick_y < 0){
-                anglerPower = operator.left_stick_y;
-            } else {
-                anglerPower = 0;
+        }
+        if(driver.right_trigger == ButtonState.PRESSED){
+            if(hardware.angler.getCurrentPosition() > hardware.anglerLow) {
+                anglerPower -= 0.1;
             }
-        } else {
+        }
+        if(driver.right_trigger == ButtonState.NOT_PRESSED && driver.right_bumper == ButtonState.NOT_PRESSED){
             anglerPower = 0;
         }
-
 
         hardware.stopper.setPosition(stopperPosition);
         hardware.climber.setPosition(climberPosition);
