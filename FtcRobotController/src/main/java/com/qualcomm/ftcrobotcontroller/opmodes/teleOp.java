@@ -15,6 +15,17 @@ public class teleOp extends OpMode {
     double winchPower, leftPosition = hardware.leftServoTop, rightPosition = hardware.rightServoTop, climberPosition = hardware.climberTop, anglerPower, stopperPosition = hardware.stopperOff;
 
     public void displayTelemetry(){
+        try{
+            telemetry.addData("Touch", hardware.touchSensor.getValue());
+        } catch (Exception e){
+            telemetry.addData("Touch", "Not attached!");
+        }
+        try{
+            telemetry.addData("Potentiometer", hardware.potentiometer.getValue());
+        } catch (Exception e){
+            telemetry.addData("Potentiometer", "Not attached!");
+        }
+
         if(leftPosition == hardware.leftServoTop){
             telemetry.addData("Left Servo Is", "Off");
         } else if(leftPosition == hardware.leftServoBottom){
@@ -55,7 +66,8 @@ public class teleOp extends OpMode {
     }
 
     @Override
-    public void init() {
+    public void init(){
+        hardware.touchSensor = hardwareMap.analogInput.get("touch");
         hardware.leftWheel = hardwareMap.dcMotor.get("l");
         hardware.leftWheel.setDirection(DcMotor.Direction.REVERSE);
         hardware.rightWheel = hardwareMap.dcMotor.get("r");
@@ -69,6 +81,14 @@ public class teleOp extends OpMode {
         hardware.stopper = hardwareMap.servo.get("s");
         hardware.climber = hardwareMap.servo.get("c");
         hardware.angler.setDirection(DcMotor.Direction.REVERSE);
+        try {
+            hardware.potentiometer = hardwareMap.analogInput.get("pot");
+        } catch (Exception e){}
+        try {
+            hardware.touchSensor = hardwareMap.analogInput.get("touch");
+        } catch (Exception e){}
+        hardware.rightGrabber = hardwareMap.servo.get("rg");
+        hardware.leftGrabber = hardwareMap.servo.get("lg");
         driver = new Controller(gamepad1);
         operator = new Controller(gamepad2);
     }
@@ -78,20 +98,20 @@ public class teleOp extends OpMode {
         driver.update(gamepad1);
         operator.update(gamepad2);
 
-        if(operator.y == ButtonState.PRESSED && climberPosition < hardware.climberTop) {
+        if(operator.y == ButtonState.PRESSED && climberPosition > hardware.climberTop) {
             climberPosition=hardware.climberTop;
-        } else if(operator.y == ButtonState.PRESSED && climberPosition > hardware.climberBottom) {
+        } else if(operator.y == ButtonState.PRESSED && climberPosition < hardware.climberBottom) {
             climberPosition=hardware.climberBottom;
         }
 
-        if(operator.x == ButtonState.PRESSED && leftPosition > hardware.leftServoTop) {
+        if(operator.x == ButtonState.PRESSED && leftPosition < hardware.leftServoTop) {
             leftPosition=hardware.leftServoTop;
-        } else if(operator.x == ButtonState.PRESSED && leftPosition < hardware.leftServoBottom) {
+        } else if(operator.x == ButtonState.PRESSED && leftPosition > hardware.leftServoBottom) {
             leftPosition=hardware.leftServoBottom;
         }
-        if(operator.b == ButtonState.PRESSED && rightPosition < hardware.rightServoTop) {
+        if(operator.b == ButtonState.PRESSED && rightPosition > hardware.rightServoTop) {
             rightPosition=hardware.rightServoTop;
-        } else if(operator.b == ButtonState.PRESSED && rightPosition > hardware.rightServoBottom) {
+        } else if(operator.b == ButtonState.PRESSED && rightPosition < hardware.rightServoBottom) {
             rightPosition=hardware.rightServoBottom;
         }
 
@@ -101,7 +121,7 @@ public class teleOp extends OpMode {
             stopperPosition = hardware.stopperOff;
         }
 
-        if(Math.abs(operator.right_stick_y) > .05 && stopperPosition != hardware.stopperOn) {
+        if(Math.abs(operator.right_stick_y) > .1 && stopperPosition != hardware.stopperOn) {
             if(hardware.winch2.getCurrentPosition() < hardware.winchCap && operator.right_stick_y > 0){
                 winchPower = operator.right_stick_y;
             }
@@ -113,17 +133,12 @@ public class teleOp extends OpMode {
         } else {
             winchPower = 0;
         }
-        if(driver.right_bumper == ButtonState.PRESSED) {
-            if (hardware.angler.getCurrentPosition() < hardware.anglerCap) {
-                anglerPower += 0.1;
-            }
-        }
-        if(driver.right_trigger == ButtonState.PRESSED){
-            if(hardware.angler.getCurrentPosition() > hardware.anglerLow) {
-                anglerPower -= 0.1;
-            }
-        }
-        if(driver.right_trigger == ButtonState.NOT_PRESSED && driver.right_bumper == ButtonState.NOT_PRESSED){
+
+        if(driver.left_bumper == ButtonState.HELD){
+            anglerPower = .75;
+        } else  if(driver.right_bumper == ButtonState.HELD && hardware.touchSensor.getValue() == 0){
+            anglerPower = -.75;
+        } else {
             anglerPower = 0;
         }
 

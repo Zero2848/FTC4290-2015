@@ -3,6 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import android.os.Environment;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -17,19 +18,23 @@ import java.io.IOException;
  */
 
 public class hardware extends OpMode{
-    public final static String FILE_DIR = Environment.getExternalStorageDirectory() + "/Encoder Settings/";
     public static DcMotor leftWheel, rightWheel, winch1, winch2, angler;
-    public static Servo climberLeft, climberRight, stopper, climber;
-    public static double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .05, rightServoBottom = .75, climberTop = .35, climberBottom = .95, stopperOn = .4, stopperOff = .9;
+    public static Servo climberLeft, climberRight, stopper, climber, leftGrabber, rightGrabber;
+    public static AnalogInput touchSensor, potentiometer;
+    public static double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .05, rightServoBottom = .75, climberTop = .35, climberBottom = .95, stopperOn = .4, stopperOff = .9, leftGUp = .95, leftGDown = .05, rightGUp = .05, rightGDown = .95;
 
     //final static int winchCap = 5000, winchLow = 80;
     final static int winchCap = 100000000, winchLow = -100000000;
 
-    final static int anglerCap = 450, anglerLow = -8400;
+    final static int anglerCap = -8400, anglerLow = 450;
 
 
 
     public void declare() throws InterruptedException {
+        hardware.potentiometer = hardwareMap.analogInput.get("pot");
+        hardware.leftGrabber = hardwareMap.servo.get("lg");
+        hardware.rightGrabber = hardwareMap.servo.get("rg");
+        hardware.touchSensor = hardwareMap.analogInput.get("touch");
         hardware.leftWheel = hardwareMap.dcMotor.get("l");
         hardware.rightWheel = hardwareMap.dcMotor.get("r");
         hardware.rightWheel.setDirection(DcMotor.Direction.REVERSE);

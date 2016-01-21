@@ -76,7 +76,7 @@ public class auto extends LinearOpMode {
         hardware.leftWheel.setPower(0);
     }
     public static void moveArm() {
-        for(double i  = hardware.climberBottom; i < hardware.climberTop; i-=.01){
+        for(double i  = hardware.climberBottom; i > hardware.climberTop; i-=.01){
             hardware.climber.setPosition(i);
         }
     }
