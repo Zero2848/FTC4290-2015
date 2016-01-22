@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
  * Created by Ethan on 1/20/16.
  */
 public class sensor extends OpMode {
+    double leftP = .5, rightP = .5;
 
     @Override
     public void init() {
@@ -19,13 +20,29 @@ public class sensor extends OpMode {
     public void loop() {
         telemetry.addData("Touch", hardware.touchSensor.getValue());
         if(gamepad1.a){
-            hardware.leftGrabber.setPosition(hardware.leftGDown);
-            hardware.rightGrabber.setPosition(hardware.rightGDown);
+            leftP += .01;
+            rightP -= .01;
         }
         if(gamepad1.b){
-            hardware.leftGrabber.setPosition(hardware.leftGUp);
-            hardware.rightGrabber.setPosition(hardware.rightGUp);
+            leftP -= .01;
+            rightP += .01;
         }
+        if(leftP > 1){
+            leftP = 1;
+        } else if(leftP < 0){
+            leftP = 0;
+        }
+        if(rightP > 1){
+            rightP = 1;
+        } else if(rightP < 0){
+            rightP = 0;
+        }
+
+        hardware.leftGrabber.setPosition(leftP);
+        hardware.rightGrabber.setPosition(rightP);
+        telemetry.addData("Left", leftP);
+        telemetry.addData("Right", rightP);
+
 
     }
 }

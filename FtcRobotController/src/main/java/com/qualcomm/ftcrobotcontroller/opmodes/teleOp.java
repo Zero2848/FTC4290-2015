@@ -12,7 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class teleOp extends OpMode {
     Controller driver, operator;
-    double winchPower, leftPosition = hardware.leftServoTop, rightPosition = hardware.rightServoTop, climberPosition = hardware.climberTop, anglerPower, stopperPosition = hardware.stopperOff;
+    double winchPower = 0, leftPosition = hardware.leftServoTop, rightPosition = hardware.rightServoTop, climberPosition = hardware.climberTop,
+            anglerPower = 0, stopperPosition = hardware.stopperOff, leftGPosition = hardware.leftGUp, rightGPosition = hardware.rightGUp;
 
     public void displayTelemetry(){
         try{
@@ -34,6 +35,21 @@ public class teleOp extends OpMode {
             telemetry.addData("Left Servo Is", "Not Connected!");
         }
 
+        if(leftGPosition == hardware.leftGUp){
+            telemetry.addData("Left Grabber Is", "Up");
+        } else if(leftGPosition == hardware.leftGDown){
+            telemetry.addData("Left Grabber Is", "Down");
+        } else {
+            telemetry.addData("Left Grabber Is", "Not Connected!");
+        }
+        if(rightGPosition == hardware.rightGDown){
+            telemetry.addData("Right Grabber Is", "Down");
+        } else if(rightGPosition == hardware.rightGUp){
+            telemetry.addData("Right Grabber Is", "Up");
+        } else {
+            telemetry.addData("Left Grabber Is", "Not Connected!");
+        }
+
         if(rightPosition == hardware.rightServoTop){
             telemetry.addData("Right Servo Is", "Off");
         } else if(rightPosition == hardware.rightServoBottom){
@@ -50,10 +66,9 @@ public class teleOp extends OpMode {
             telemetry.addData("Climber Servo Is", "Not Connected!");
         }
         if(stopperPosition == hardware.stopperOn){
+            telemetry.addData("Stopper Servo Is", "On");
         } else if(stopperPosition == hardware.stopperOff){
             telemetry.addData("Stopper Servo Is", "Off");
-        } else {
-            telemetry.addData("Stopper Servo Is", "On");
         }
         telemetry.addData("Left Motor Encoder: ", hardware.leftWheel.getCurrentPosition());
         telemetry.addData("Right Motor Encoder: ", hardware.rightWheel.getCurrentPosition());
@@ -80,47 +95,64 @@ public class teleOp extends OpMode {
         hardware.climberRight = hardwareMap.servo.get("cr");
         hardware.stopper = hardwareMap.servo.get("s");
         hardware.climber = hardwareMap.servo.get("c");
+        hardware.climberRight.setPosition(hardware.rightServoTop);
+        hardware.climberLeft.setPosition(hardware.leftServoTop);
         hardware.angler.setDirection(DcMotor.Direction.REVERSE);
         try {
             hardware.potentiometer = hardwareMap.analogInput.get("pot");
-        } catch (Exception e){}
+        } catch (Exception e){
+            telemetry.addData("potentiometer", "potentiometer is off!");
+        }
         try {
             hardware.touchSensor = hardwareMap.analogInput.get("touch");
-        } catch (Exception e){}
+        } catch (Exception e){
+            telemetry.addData("touch", "touch is off!");
+        }
         hardware.rightGrabber = hardwareMap.servo.get("rg");
         hardware.leftGrabber = hardwareMap.servo.get("lg");
         driver = new Controller(gamepad1);
         operator = new Controller(gamepad2);
     }
 
-    @Override
-    public void loop() {
-        driver.update(gamepad1);
-        operator.update(gamepad2);
-
-        if(operator.y == ButtonState.PRESSED && climberPosition > hardware.climberTop) {
+    public void grabbers(){
+        if(driver.a == ButtonState.PRESSED && leftGPosition != hardware.leftGDown) {
+            leftGPosition=hardware.leftGDown;
+            rightGPosition=hardware.rightGDown;
+        } else if(driver.a == ButtonState.PRESSED && leftGPosition != hardware.leftGUp) {
+            leftGPosition=hardware.leftGUp;
+            rightGPosition=hardware.rightGUp;
+        }
+    }
+    public void climberDump(){
+        if(operator.y == ButtonState.PRESSED && climberPosition != hardware.climberTop) {
             climberPosition=hardware.climberTop;
-        } else if(operator.y == ButtonState.PRESSED && climberPosition < hardware.climberBottom) {
+        } else if(operator.y == ButtonState.PRESSED && climberPosition != hardware.climberBottom) {
             climberPosition=hardware.climberBottom;
         }
 
-        if(operator.x == ButtonState.PRESSED && leftPosition < hardware.leftServoTop) {
+    }
+    public void leftServo(){
+        if(operator.x == ButtonState.PRESSED && leftPosition != hardware.leftServoTop) {
             leftPosition=hardware.leftServoTop;
-        } else if(operator.x == ButtonState.PRESSED && leftPosition > hardware.leftServoBottom) {
+        } else if(operator.x == ButtonState.PRESSED && leftPosition != hardware.leftServoBottom) {
             leftPosition=hardware.leftServoBottom;
         }
-        if(operator.b == ButtonState.PRESSED && rightPosition > hardware.rightServoTop) {
+    }
+    public void rightServo(){
+        if(operator.b == ButtonState.PRESSED && rightPosition != hardware.rightServoTop) {
             rightPosition=hardware.rightServoTop;
-        } else if(operator.b == ButtonState.PRESSED && rightPosition < hardware.rightServoBottom) {
+        } else if(operator.b == ButtonState.PRESSED && rightPosition != hardware.rightServoBottom) {
             rightPosition=hardware.rightServoBottom;
         }
-
+    }
+    public void stopper(){
         if(operator.a == ButtonState.PRESSED && stopperPosition != hardware.stopperOn) {
             stopperPosition = hardware.stopperOn;
         } else if(operator.a == ButtonState.PRESSED && stopperPosition != hardware.stopperOff) {
             stopperPosition = hardware.stopperOff;
         }
-
+    }
+    public void winch(){
         if(Math.abs(operator.right_stick_y) > .1 && stopperPosition != hardware.stopperOn) {
             if(hardware.winch2.getCurrentPosition() < hardware.winchCap && operator.right_stick_y > 0){
                 winchPower = operator.right_stick_y;
@@ -133,19 +165,38 @@ public class teleOp extends OpMode {
         } else {
             winchPower = 0;
         }
-
-        if(driver.left_bumper == ButtonState.HELD){
+    }
+    public void angler(){
+        if(driver.right_bumper == ButtonState.HELD){
             anglerPower = .75;
-        } else  if(driver.right_bumper == ButtonState.HELD && hardware.touchSensor.getValue() == 0){
+        } else if(driver.left_bumper == ButtonState.HELD && hardware.touchSensor.getValue() == 0){
             anglerPower = -.75;
         } else {
             anglerPower = 0;
         }
+    }
+
+
+    @Override
+    public void loop() {
+        driver.update(gamepad1);
+        operator.update(gamepad2);
+
+        grabbers();
+        climberDump();
+        leftServo();
+        rightServo();
+        stopper();
+        winch();
+         angler();
 
         hardware.stopper.setPosition(stopperPosition);
         hardware.climber.setPosition(climberPosition);
         hardware.climberLeft.setPosition(leftPosition);
         hardware.climberRight.setPosition(rightPosition);
+
+        hardware.rightGrabber.setPosition(rightGPosition);
+        hardware.leftGrabber.setPosition(leftGPosition);
 
         hardware.winch1.setPower(winchPower);
         hardware.winch2.setPower(winchPower);
