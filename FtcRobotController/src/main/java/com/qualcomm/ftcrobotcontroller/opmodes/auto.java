@@ -18,22 +18,29 @@ public class auto extends LinearOpMode {
         hardware.winch1 = hardwareMap.dcMotor.get("w1");
         hardware.winch1.setDirection(DcMotor.Direction.REVERSE);
         hardware.winch2 = hardwareMap.dcMotor.get("w2");
+
         hardware.angler = hardwareMap.dcMotor.get("a");
         hardware.angler.setDirection(DcMotor.Direction.REVERSE);
+
         hardware.climberLeft = hardwareMap.servo.get("cl");
+        hardware.climberLeft.setPosition(hardware.leftServoTop);
+
         hardware.climberRight = hardwareMap.servo.get("cr");
+        hardware.climberRight.setPosition(hardware.rightServoTop);
+
         hardware.stopper = hardwareMap.servo.get("s");
+        hardware.stopper.setPosition(hardware.stopperOff);
+
         hardware.climber = hardwareMap.servo.get("c");
+        hardware.climber.setPosition(hardware.climberBottom);
+
         hardware.winch2.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         hardware.angler.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+
         while (hardware.rightWheel.getCurrentPosition() != 0){
             hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
         }//gives hardware the time to reset
         hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        hardware.climber.setPosition(hardware.climberBottom);
-        hardware.climberRight.setPosition(hardware.rightServoTop);
-        hardware.climberLeft.setPosition(hardware.leftServoTop);
-        hardware.stopper.setPosition(hardware.stopperOff);
         waitOneFullHardwareCycle();
     }
     public void driveTo(int ticks, double powerLeft, double powerRight) throws InterruptedException {
