@@ -46,6 +46,10 @@ public class FtcOpModeRegister implements OpModeRegister {
    * @param manager op mode manager
    */
   public void register(OpModeManager manager) {
+      manager.register("TeleOp", teleOp.class);
+      manager.register("Test Climber Servo", slowServo.class);
+      manager.register("Sensor", sensor.class);
+      manager.register("Auto [RedDump]", redDump.class);
 
   }
 }
