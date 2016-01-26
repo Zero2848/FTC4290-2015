@@ -20,7 +20,13 @@ import java.io.IOException;
 public class hardware extends OpMode{
     public static DcMotor leftWheel, rightWheel, winch1, winch2, angler;
     public static Servo climberLeft, climberRight, stopper, climber, leftGrabber, rightGrabber;
-    public static double leftServoTop = .97, leftServoBottom = .25, rightServoTop = .05, rightServoBottom = .75, climberTop = .25, climberBottom = .95, stopperOn = .4, stopperOff = .9, leftGUp = 1, leftGDown = 0, rightGUp = 0, rightGDown = 1;
+
+    public static double leftServoTop = .97, leftServoBottom = .25,
+            rightServoTop = .05, rightServoBottom = .75,
+            climberTop = .25, climberBottom = .95,
+            stopperOn = .4, stopperOff = .9,
+            leftGUp = 1.0, leftGDown = 0.0,
+            rightGUp = 0.0, rightGDown = 1.0;
 
     //final static int winchCap = 5000, winchLow = 80;
     final static int winchCap = 100000000, winchLow = -100000000;

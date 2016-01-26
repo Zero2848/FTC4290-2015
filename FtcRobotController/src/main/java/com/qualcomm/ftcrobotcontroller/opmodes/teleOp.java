@@ -17,16 +17,16 @@ public class teleOp extends OpMode {
             anglerPower = 0, stopperPosition = hardware.stopperOff, leftGPosition = hardware.leftGUp, rightGPosition = hardware.rightGUp;
 
     public void resetEncoder(DcMotor m){
-        while(m.getCurrentPosition()!=0){
+        while(m.getCurrentPosition() != 0){
             m.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
         }
         m.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
     }
     public void declare() {
         hardware.leftWheel = hardwareMap.dcMotor.get("l");
+        hardware.leftWheel.setDirection(DcMotor.Direction.REVERSE);
         resetEncoder(hardware.leftWheel);
         hardware.rightWheel = hardwareMap.dcMotor.get("r");
-        hardware.rightWheel.setDirection(DcMotor.Direction.REVERSE);
         resetEncoder(hardware.rightWheel);
         hardware.winch1 = hardwareMap.dcMotor.get("w1");
         hardware.winch1.setDirection(DcMotor.Direction.REVERSE);
@@ -34,7 +34,6 @@ public class teleOp extends OpMode {
         resetEncoder(hardware.winch2);
         hardware.angler = hardwareMap.dcMotor.get("a");
         hardware.angler.setDirection(DcMotor.Direction.REVERSE);
-        resetEncoder(hardware.angler);
 
         hardware.climberLeft = hardwareMap.servo.get("cl");
         hardware.climberLeft.setPosition(hardware.leftServoTop);
@@ -47,16 +46,20 @@ public class teleOp extends OpMode {
 
         hardware.climber = hardwareMap.servo.get("c");
         hardware.climber.setPosition(hardware.climberBottom);
+
+        hardware.leftGrabber = hardwareMap.servo.get("lg");
+        hardware.rightGrabber = hardwareMap.servo.get("rg");
     }
     public void grabbers(){
-        if((driver.right_bumper == ButtonState.PRESSED || driver.left_bumper == ButtonState.PRESSED) && leftGPosition != hardware.leftGDown) {
-            leftGPosition=hardware.leftGDown;
-            rightGPosition=hardware.rightGDown;
-        } else if((driver.right_bumper == ButtonState.PRESSED || driver.left_bumper == ButtonState.PRESSED) && leftGPosition != hardware.leftGUp) {
-            leftGPosition=hardware.leftGUp;
-            rightGPosition=hardware.rightGUp;
+        if(driver.x == ButtonState.PRESSED && leftGPosition != hardware.leftGDown) {
+            leftGPosition = hardware.leftGDown;
+            rightGPosition = hardware.rightGDown;
+        } else if(driver.x == ButtonState.PRESSED && leftGPosition != hardware.leftGUp) {
+            leftGPosition = hardware.leftGUp;
+            rightGPosition = hardware.rightGUp;
         }
     }
+
     public void climberDump(){
         if(operator.y == ButtonState.PRESSED && climberPosition != hardware.climberTop) {
             climberPosition=hardware.climberTop;
@@ -101,9 +104,9 @@ public class teleOp extends OpMode {
         }
     }
     public void angler(){
-        if(driver.a == ButtonState.HELD){//go down (might be wrong)
+        if(driver.y == ButtonState.HELD){//go up
             anglerPower = .75;
-        } else if(driver.y == ButtonState.HELD){//go up (might be wrong)
+        } else if(driver.a == ButtonState.HELD){//go down
             anglerPower = -.75;
         } else {
             anglerPower = 0;
@@ -157,11 +160,15 @@ public class teleOp extends OpMode {
         telemetry.addData("Left Motor Encoder: ", hardware.leftWheel.getCurrentPosition());
         telemetry.addData("Right Motor Encoder: ", hardware.rightWheel.getCurrentPosition());
         telemetry.addData("Winch2 Encoder: ", hardware.winch2.getCurrentPosition());
-        telemetry.addData("Angler Encoder: ", hardware.angler.getCurrentPosition());
         telemetry.addData("Left Motor Power: ", driver.left_stick_y);
         telemetry.addData("Right Motor Power: ", driver.right_stick_y);
         telemetry.addData("Winch Power: ", winchPower);
         telemetry.addData("Angler Power:", anglerPower);
+    }
+    public void housekeeping(){
+        driver.update(gamepad1);
+        operator.update(gamepad2);
+        displayTelemetry();
     }
 
     @Override
@@ -171,13 +178,12 @@ public class teleOp extends OpMode {
         operator = new Controller(gamepad2);
     }
 
-
     @Override
     public void loop() {
-        driver.update(gamepad1);
-        operator.update(gamepad2);
+        telemetry.addData("Controller", driver.toString());
+        housekeeping();
 
-        grabbers();
+        grabbers();//source of error
         hardware.rightGrabber.setPosition(rightGPosition);
         hardware.leftGrabber.setPosition(leftGPosition);
 
@@ -199,8 +205,6 @@ public class teleOp extends OpMode {
         hardware.angler.setPower(anglerPower);
 
         Tank.Motor2(hardware.leftWheel, hardware.rightWheel, driver.left_stick_y, driver.right_stick_y);
-
-        displayTelemetry();
     }
 
 }
