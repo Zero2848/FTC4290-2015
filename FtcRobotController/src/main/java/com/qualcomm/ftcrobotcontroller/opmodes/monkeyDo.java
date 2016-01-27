@@ -3,18 +3,17 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.lasarobotics.library.controller.ButtonState;
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
+import com.lasarobotics.library.monkeyc.MonkeyData;
+import com.lasarobotics.library.monkeyc.MonkeyDo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
-/**
- * Created by Ethan on 1/12/16.
- */
-
-public class teleOp extends OpMode {
+public class monkeyDo extends OpMode {
     Controller driver, operator;
     double winchPower = 0, leftPosition = hardware.leftServoTop, rightPosition = hardware.rightServoTop, climberPosition = hardware.climberBottom,
             anglerPower = 0, stopperPosition = hardware.stopperOff, leftGPosition = hardware.leftGUp, rightGPosition = hardware.rightGUp;
+    MonkeyDo reader;
 
     public void resetEncoder(DcMotor m){
         while(m.getCurrentPosition() != 0){
@@ -171,38 +170,57 @@ public class teleOp extends OpMode {
     }
 
     @Override
-    public void init(){
+    public void init() {
         declare();
         driver = new Controller(gamepad1);
         operator = new Controller(gamepad2);
+        reader = new MonkeyDo("test.txt", hardwareMap.appContext);
+    }
+
+    @Override
+    public void start() {
+        reader.onStart();
     }
 
     @Override
     public void loop() {
-        housekeeping();
+        MonkeyData m = reader.getNextCommand();
+        if (m.hasUpdate()) {
+            m = reader.getNextCommand();
+            driver = m.updateControllerOne(driver);
+            operator = m.updateControllerTwo(operator);
+            housekeeping();
 
-        grabbers();//source of error
-        hardware.rightGrabber.setPosition(rightGPosition);
-        hardware.leftGrabber.setPosition(leftGPosition);
+            grabbers();//source of error
+            hardware.rightGrabber.setPosition(rightGPosition);
+            hardware.leftGrabber.setPosition(leftGPosition);
 
-        climberDump();
-        hardware.climber.setPosition(climberPosition);
+            climberDump();
+            hardware.climber.setPosition(climberPosition);
 
-        leftServo();
-        hardware.climberLeft.setPosition(leftPosition);
-        rightServo();
-        hardware.climberRight.setPosition(rightPosition);
-        stopper();
-        hardware.stopper.setPosition(stopperPosition);
+            leftServo();
+            hardware.climberLeft.setPosition(leftPosition);
+            rightServo();
+            hardware.climberRight.setPosition(rightPosition);
+            stopper();
+            hardware.stopper.setPosition(stopperPosition);
 
-        winch();
-        hardware.winch1.setPower(winchPower);
-        hardware.winch2.setPower(winchPower);
+            winch();
+            hardware.winch1.setPower(winchPower);
+            hardware.winch2.setPower(winchPower);
 
-        angler();
-        hardware.angler.setPower(anglerPower);
+            angler();
+            hardware.angler.setPower(anglerPower);
 
-        Tank.Motor2(hardware.leftWheel, hardware.rightWheel, driver.left_stick_y, driver.right_stick_y);
+            Tank.Motor2(hardware.leftWheel, hardware.rightWheel, driver.left_stick_y, driver.right_stick_y);
+
+        } else {
+            telemetry.addData("Status", "Done replaying!");
+            //We can choose to stop the timer here, but why...
+        }
     }
 
+    @Override
+    public void stop() {
+    }
 }

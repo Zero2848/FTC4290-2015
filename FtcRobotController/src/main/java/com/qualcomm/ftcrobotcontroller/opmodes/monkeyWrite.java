@@ -1,20 +1,19 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+
 import com.lasarobotics.library.controller.ButtonState;
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
+import com.lasarobotics.library.monkeyc.MonkeyC;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
-/**
- * Created by Ethan on 1/12/16.
- */
-
-public class teleOp extends OpMode {
+public class monkeyWrite extends OpMode {
     Controller driver, operator;
     double winchPower = 0, leftPosition = hardware.leftServoTop, rightPosition = hardware.rightServoTop, climberPosition = hardware.climberBottom,
             anglerPower = 0, stopperPosition = hardware.stopperOff, leftGPosition = hardware.leftGUp, rightGPosition = hardware.rightGUp;
+    MonkeyC writer;
 
     public void resetEncoder(DcMotor m){
         while(m.getCurrentPosition() != 0){
@@ -171,10 +170,15 @@ public class teleOp extends OpMode {
     }
 
     @Override
-    public void init(){
+    public void init() {
         declare();
         driver = new Controller(gamepad1);
         operator = new Controller(gamepad2);
+    }
+
+    @Override
+    public void start() {
+        writer = new MonkeyC();
     }
 
     @Override
@@ -205,4 +209,8 @@ public class teleOp extends OpMode {
         Tank.Motor2(hardware.leftWheel, hardware.rightWheel, driver.left_stick_y, driver.right_stick_y);
     }
 
+    @Override
+    public void stop() {
+        writer.write("test.txt", hardwareMap.appContext);
+    }
 }

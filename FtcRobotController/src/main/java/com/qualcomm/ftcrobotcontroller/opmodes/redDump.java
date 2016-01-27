@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 
 public class redDump extends LinearOpMode {
     int wheelPosition;
+
     public void resetEncoder(DcMotor m){
         while(m.getCurrentPosition()!=0){
             m.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
@@ -86,9 +87,6 @@ public class redDump extends LinearOpMode {
     }
     public void say(String message){
         telemetry.addData("STATUS", message);
-    }
-    public void say(String key, String message){
-        telemetry.addData(key, message);
     }
 
     @Override
