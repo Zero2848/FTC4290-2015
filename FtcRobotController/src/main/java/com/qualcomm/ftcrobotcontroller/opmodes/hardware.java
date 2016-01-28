@@ -23,7 +23,7 @@ public class hardware extends OpMode{
 
     public static double leftServoTop = .97, leftServoBottom = .25,
             rightServoTop = .05, rightServoBottom = .75,
-            climberTop = .75, climberBottom = .35,
+            climberTop = .01, climberBottom =.99,
             stopperOn = .4, stopperOff = .9,
             leftGUp = 1.0, leftGDown = 0.0,
             rightGUp = 0.0, rightGDown = 1.0;
