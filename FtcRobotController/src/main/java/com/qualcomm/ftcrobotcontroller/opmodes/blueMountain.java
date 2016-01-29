@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class blueMountain extends LinearOpMode {
     int wheelPosition;
+    public double leftPow = .45, rightPow = .4;
 
     public void resetEncoder(DcMotor m){
         while(m.getCurrentPosition()!=0){
@@ -49,28 +50,32 @@ public class blueMountain extends LinearOpMode {
     }
     public void driveTo(int ticks, double powerLeft, double powerRight) throws InterruptedException {
         while(wheelPosition != ticks) {
-            wheelPosition = hardware.rightWheel.getCurrentPosition();
-            telemetry.addData("1", "wheel at: " + wheelPosition + " ticks.");
+            wheelPosition = ((Math.abs(hardware.rightWheel.getCurrentPosition())+Math.abs(hardware.leftWheel.getCurrentPosition()))/2);
+            telemetry.addData("wheel at", wheelPosition + " ticks.");
             if(wheelPosition < ticks) {
-                telemetry.addData("2", "tick goal: " + (ticks));
-                telemetry.addData("3", "near");
+                telemetry.addData("tick goal:", ticks);
                 hardware.leftWheel.setPower(powerLeft);
                 hardware.rightWheel.setPower(powerRight);
             }
             else if (wheelPosition > ticks) {
-                telemetry.addData("2", "tick goal: " + (ticks));
-                telemetry.addData("3", "far");
+                telemetry.addData("tick goal", ticks);
                 hardware.leftWheel.setPower(-powerLeft);
                 hardware.rightWheel.setPower(-powerRight);
             } else {
                 break;
             }
         }
+
         stopDrive();
         while (hardware.rightWheel.getCurrentPosition() != 0){
             hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
         }//gives hardware the time to reset
+        while (hardware.leftWheel.getCurrentPosition() != 0){
+            hardware.leftWheel.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        }//gives hardware the time to reset
+
         hardware.rightWheel.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        hardware.leftWheel.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         waitOneFullHardwareCycle();
         stopDrive();
     }
@@ -94,24 +99,26 @@ public class blueMountain extends LinearOpMode {
         hardware.leftGrabber.setPosition(hardware.leftGUp);
         waitForStart();
 
-        driveDist(42, .2, .2);
+        driveDist(52, leftPow, rightPow);
         say("DRIVEN");
 
         sleep(100);
 
-        driveDist(13, .2, -.2);
+        driveDist(15, leftPow, -rightPow);
         say("TURNED");
 
         sleep(100);
 
-        hardware.rightWheel.setPower(-1);
-        hardware.leftWheel.setPower(-1);
-        say("THERE?");
-
-        sleep(5000);
-
+        resetEncoder(hardware.leftWheel);
+        resetEncoder(hardware.rightWheel);
         hardware.rightWheel.setPower(-.75);
-        hardware.leftWheel.setPower(-.75);
+        hardware.leftWheel.setPower(-.8);
+        wheelPosition = hardware.leftWheel.getCurrentPosition()+hardware.rightWheel.getCurrentPosition()/2;
+
+        while(wheelPosition > -2000){
+            wheelPosition =hardware.leftWheel.getCurrentPosition()+hardware.rightWheel.getCurrentPosition()/2;
+            say(""+wheelPosition);
+        }
         hardware.rightGrabber.setPosition(hardware.rightGDown);
         hardware.leftGrabber.setPosition(hardware.leftGDown);
         waitOneFullHardwareCycle();
@@ -120,7 +127,6 @@ public class blueMountain extends LinearOpMode {
         sleep(500);
         stopDrive();
         say("DONE");
-
 
     }
 }
