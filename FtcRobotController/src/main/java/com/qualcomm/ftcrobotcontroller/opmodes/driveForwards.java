@@ -4,12 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
-/**
- * Created by 4290 on 1/21/16.
- */
-public class driveForwards extends LinearOpMode {
+public class DriveForwards extends LinearOpMode {
+    final double lp = .45;
+    final double rp = .4;
     DcMotor left, right;
-    double lp = .45, rp = .4;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -17,11 +15,11 @@ public class driveForwards extends LinearOpMode {
         right = hardwareMap.dcMotor.get("r");
         left.setDirection(DcMotor.Direction.REVERSE);
         waitForStart(); //this makes sure that the robot
-                        // does not move until the play
-                        // button is pressed
+        // does not move until the play
+        // button is pressed
         telemetry.addData("Status:", "Robot Stopped");
-        while(left.getCurrentPosition() != 0) {
-            left.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        while (left.getCurrentPosition() != 0) {
+            left.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         }
         waitOneFullHardwareCycle();
         /*
@@ -33,7 +31,7 @@ public class driveForwards extends LinearOpMode {
         */
         double targetDistance = 5000; //target distance in encoder ticks. 1440 ticks = 1 rotation of a motor.
 
-        while(left.getCurrentPosition() < targetDistance) {
+        while (left.getCurrentPosition() < targetDistance) {
             left.setPower(lp);
             right.setPower(rp);
             telemetry.addData("Left Motor is at", left.getCurrentPosition());

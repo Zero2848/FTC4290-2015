@@ -1,17 +1,22 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-/**
- * Created by Ethan on 1/19/16.
- */
-public class slowServo extends LinearOpMode {
+public class SlowServo extends LinearOpMode {
+    Hardware config;
+
+    public void moveArm() {
+        for (double i = Hardware.climberBottom; i > Hardware.climberTop; i -= .01) {
+            config.climber.setPosition(i);
+        }
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
-        hardware.climber = hardwareMap.servo.get("c");
+        config = new Hardware(hardwareMap);
+        config.climber = hardwareMap.servo.get("c");
         waitForStart();
-        auto.moveArm();
+        moveArm();
     }
 }

@@ -3,97 +3,73 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.lasarobotics.library.controller.ButtonState;
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
+import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
-/**
- * Created by Ethan on 1/12/16.
- */
-
-public class teleOp extends OpMode {
+public class TeleOp extends OpMode {
+    Hardware config;
     Controller driver, operator;
-    double winchPower = 0, leftPosition = hardware.leftServoTop, rightPosition = hardware.rightServoTop, climberPosition = hardware.climberBottom,
-            anglerPower = 0, stopperPosition = hardware.stopperOff, leftGPosition = hardware.leftGUp, rightGPosition = hardware.rightGUp;
 
-    public void resetEncoder(DcMotor m){
-        while(m.getCurrentPosition() != 0){
-            m.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+    double winchPower = 0, leftPosition = Hardware.leftServoTop, rightPosition = Hardware.rightServoTop, climberPosition = Hardware.climberBottom,
+            anglerPower = 0, stopperPosition = Hardware.stopperOff, leftGPosition = Hardware.leftGUp, rightGPosition = Hardware.rightGUp;
+
+    public void resetEncoder(DcMotor m) {
+        while (m.getCurrentPosition() != 0) {
+            m.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         }
-        m.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        m.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
     }
-    public void declare() {
-        hardware.leftWheel = hardwareMap.dcMotor.get("l");
-        hardware.leftWheel.setDirection(DcMotor.Direction.REVERSE);
-        resetEncoder(hardware.leftWheel);
-        hardware.rightWheel = hardwareMap.dcMotor.get("r");
-        resetEncoder(hardware.rightWheel);
-        hardware.winch1 = hardwareMap.dcMotor.get("w1");
-        hardware.winch1.setDirection(DcMotor.Direction.REVERSE);
-        hardware.winch2 = hardwareMap.dcMotor.get("w2");
-        resetEncoder(hardware.winch2);
-        hardware.angler = hardwareMap.dcMotor.get("a");
-        hardware.angler.setDirection(DcMotor.Direction.REVERSE);
 
-        hardware.climberLeft = hardwareMap.servo.get("cl");
-        hardware.climberLeft.setPosition(hardware.leftServoTop);
-
-        hardware.climberRight = hardwareMap.servo.get("cr");
-        hardware.climberRight.setPosition(hardware.rightServoTop);
-
-        hardware.stopper = hardwareMap.servo.get("s");
-        hardware.stopper.setPosition(hardware.stopperOff);
-
-        hardware.climber = hardwareMap.servo.get("c");
-        hardware.climber.setPosition(hardware.climberBottom);
-
-        hardware.leftGrabber = hardwareMap.servo.get("lg");
-        hardware.rightGrabber = hardwareMap.servo.get("rg");
-    }
-    public void grabbers(){
-        if(driver.x == ButtonState.PRESSED && leftGPosition != hardware.leftGDown) {
-            leftGPosition = hardware.leftGDown;
-            rightGPosition = hardware.rightGDown;
-        } else if(driver.x == ButtonState.PRESSED && leftGPosition != hardware.leftGUp) {
-            leftGPosition = hardware.leftGUp;
-            rightGPosition = hardware.rightGUp;
+    public void grabbers() {
+        if (driver.x == ButtonState.PRESSED && leftGPosition != Hardware.leftGDown) {
+            leftGPosition = Hardware.leftGDown;
+            rightGPosition = Hardware.rightGDown;
+        } else if (driver.x == ButtonState.PRESSED && leftGPosition != Hardware.leftGUp) {
+            leftGPosition = Hardware.leftGUp;
+            rightGPosition = Hardware.rightGUp;
         }
     }
-    public void climberDump(){
-        if(operator.y == ButtonState.PRESSED && climberPosition != hardware.climberTop) {
-            climberPosition=hardware.climberTop;
-        } else if(operator.y == ButtonState.PRESSED && climberPosition != hardware.climberBottom) {
-            climberPosition=hardware.climberBottom;
+
+    public void climberDump() {
+        if (operator.y == ButtonState.PRESSED && climberPosition != Hardware.climberTop) {
+            climberPosition = Hardware.climberTop;
+        } else if (operator.y == ButtonState.PRESSED && climberPosition != Hardware.climberBottom) {
+            climberPosition = Hardware.climberBottom;
         }
 
     }
-    public void leftServo(){
-        if(operator.x == ButtonState.PRESSED && leftPosition != hardware.leftServoTop) {
-            leftPosition=hardware.leftServoTop;
-        } else if(operator.x == ButtonState.PRESSED && leftPosition != hardware.leftServoBottom) {
-            leftPosition=hardware.leftServoBottom;
+
+    public void leftServo() {
+        if (operator.x == ButtonState.PRESSED && leftPosition != Hardware.leftServoTop) {
+            leftPosition = Hardware.leftServoTop;
+        } else if (operator.x == ButtonState.PRESSED && leftPosition != Hardware.leftServoBottom) {
+            leftPosition = Hardware.leftServoBottom;
         }
     }
-    public void rightServo(){
-        if(operator.b == ButtonState.PRESSED && rightPosition != hardware.rightServoTop) {
-            rightPosition=hardware.rightServoTop;
-        } else if(operator.b == ButtonState.PRESSED && rightPosition != hardware.rightServoBottom) {
-            rightPosition=hardware.rightServoBottom;
+
+    public void rightServo() {
+        if (operator.b == ButtonState.PRESSED && rightPosition != Hardware.rightServoTop) {
+            rightPosition = Hardware.rightServoTop;
+        } else if (operator.b == ButtonState.PRESSED && rightPosition != Hardware.rightServoBottom) {
+            rightPosition = Hardware.rightServoBottom;
         }
     }
-    public void stopper(){
-        if(operator.a == ButtonState.PRESSED && stopperPosition != hardware.stopperOn) {
-            stopperPosition = hardware.stopperOn;
-        } else if(operator.a == ButtonState.PRESSED && stopperPosition != hardware.stopperOff) {
-            stopperPosition = hardware.stopperOff;
+
+    public void stopper() {
+        if (operator.a == ButtonState.PRESSED && stopperPosition != Hardware.stopperOn) {
+            stopperPosition = Hardware.stopperOn;
+        } else if (operator.a == ButtonState.PRESSED && stopperPosition != Hardware.stopperOff) {
+            stopperPosition = Hardware.stopperOff;
         }
     }
-    public void winch(){
-        if(Math.abs(operator.right_stick_y) > .1 && stopperPosition != hardware.stopperOn) {
-            if(hardware.winch2.getCurrentPosition() < hardware.winchCap && operator.right_stick_y > 0){
+
+    public void winch() {
+        if (Math.abs(operator.right_stick_y) > .1 && stopperPosition != Hardware.stopperOn) {
+            if (config.winch2.getCurrentPosition() < Hardware.winchCap && operator.right_stick_y > 0) {
                 winchPower = operator.right_stick_y;
-            }
-            else if(hardware.winch2.getCurrentPosition() > hardware.winchLow && operator.right_stick_y < 0){
+            } else if (config.winch2.getCurrentPosition() > Hardware.winchLow && operator.right_stick_y < 0) {
                 winchPower = operator.right_stick_y;
             } else {
                 winchPower = 0;
@@ -102,77 +78,80 @@ public class teleOp extends OpMode {
             winchPower = 0;
         }
     }
-    public void angler(){
-        if(driver.y == ButtonState.HELD){//go up
+
+    public void angler() {
+        if (driver.y == ButtonState.HELD) {//go up
             anglerPower = .75;
-        } else if(driver.a == ButtonState.HELD){//go down
+        } else if (driver.a == ButtonState.HELD) {//go down
             anglerPower = -.75;
         } else {
             anglerPower = 0;
         }
     }
-    public void displayTelemetry(){
 
-        if(leftPosition == hardware.leftServoTop){
+    public void displayTelemetry() {
+
+        if (leftPosition == Hardware.leftServoTop) {
             telemetry.addData("Left Servo Is", "Off");
-        } else if(leftPosition == hardware.leftServoBottom){
+        } else if (leftPosition == Hardware.leftServoBottom) {
             telemetry.addData("Left Servo Is", "On");
         } else {
             telemetry.addData("Left Servo Is", "Not Connected!");
         }
 
-        if(leftGPosition == hardware.leftGUp){
+        if (leftGPosition == Hardware.leftGUp) {
             telemetry.addData("Left Grabber Is", "Up");
-        } else if(leftGPosition == hardware.leftGDown){
+        } else if (leftGPosition == Hardware.leftGDown) {
             telemetry.addData("Left Grabber Is", "Down");
         } else {
             telemetry.addData("Left Grabber Is", "Not Connected!");
         }
-        if(rightGPosition == hardware.rightGDown){
+        if (rightGPosition == Hardware.rightGDown) {
             telemetry.addData("Right Grabber Is", "Down");
-        } else if(rightGPosition == hardware.rightGUp){
+        } else if (rightGPosition == Hardware.rightGUp) {
             telemetry.addData("Right Grabber Is", "Up");
         } else {
             telemetry.addData("Left Grabber Is", "Not Connected!");
         }
 
-        if(rightPosition == hardware.rightServoTop){
+        if (rightPosition == Hardware.rightServoTop) {
             telemetry.addData("Right Servo Is", "Off");
-        } else if(rightPosition == hardware.rightServoBottom){
+        } else if (rightPosition == Hardware.rightServoBottom) {
             telemetry.addData("Right Servo Is", "On");
         } else {
             telemetry.addData("Right Servo Is", "Not Connected!");
         }
 
-        if(climberPosition == hardware.climberBottom){
+        if (climberPosition == Hardware.climberBottom) {
             telemetry.addData("Climber Servo Is", "Off");
-        } else if(climberPosition == hardware.climberTop){
+        } else if (climberPosition == Hardware.climberTop) {
             telemetry.addData("Climber Servo Is", "On");
         } else {
             telemetry.addData("Climber Servo Is", "Not Connected!");
         }
-        if(stopperPosition == hardware.stopperOn){
+        if (stopperPosition == Hardware.stopperOn) {
             telemetry.addData("Stopper Servo Is", "On");
-        } else if(stopperPosition == hardware.stopperOff){
+        } else if (stopperPosition == Hardware.stopperOff) {
             telemetry.addData("Stopper Servo Is", "Off");
         }
-        telemetry.addData("Left Motor Encoder: ", hardware.leftWheel.getCurrentPosition());
-        telemetry.addData("Right Motor Encoder: ", hardware.rightWheel.getCurrentPosition());
-        telemetry.addData("Winch2 Encoder: ", hardware.winch2.getCurrentPosition());
+        telemetry.addData("Left Motor Encoder: ", config.leftWheel.getCurrentPosition());
+        telemetry.addData("Right Motor Encoder: ", config.rightWheel.getCurrentPosition());
+        telemetry.addData("Winch2 Encoder: ", config.winch2.getCurrentPosition());
         telemetry.addData("Left Motor Power: ", driver.left_stick_y);
         telemetry.addData("Right Motor Power: ", driver.right_stick_y);
         telemetry.addData("Winch Power: ", winchPower);
         telemetry.addData("Angler Power:", anglerPower);
     }
-    public void housekeeping(){
+
+    public void housekeeping() {
         driver.update(gamepad1);
         operator.update(gamepad2);
         displayTelemetry();
     }
 
     @Override
-    public void init(){
-        declare();
+    public void init() {
+        config = new Hardware(hardwareMap);
         driver = new Controller(gamepad1);
         operator = new Controller(gamepad2);
     }
@@ -182,27 +161,27 @@ public class teleOp extends OpMode {
         housekeeping();
 
         grabbers();//source of error
-        hardware.rightGrabber.setPosition(rightGPosition);
-        hardware.leftGrabber.setPosition(leftGPosition);
+        config.rightGrabber.setPosition(rightGPosition);
+        config.leftGrabber.setPosition(leftGPosition);
 
         climberDump();
-        hardware.climber.setPosition(climberPosition);
+        config.climber.setPosition(climberPosition);
 
         leftServo();
-        hardware.climberLeft.setPosition(leftPosition);
+        config.climberLeft.setPosition(leftPosition);
         rightServo();
-        hardware.climberRight.setPosition(rightPosition);
+        config.climberRight.setPosition(rightPosition);
         stopper();
-        hardware.stopper.setPosition(stopperPosition);
+        config.stopper.setPosition(stopperPosition);
 
         winch();
-        hardware.winch1.setPower(winchPower);
-        hardware.winch2.setPower(winchPower);
+        config.winch1.setPower(winchPower);
+        config.winch2.setPower(winchPower);
 
         angler();
-        hardware.angler.setPower(anglerPower);
+        config.angler.setPower(anglerPower);
 
-        Tank.Motor2(hardware.leftWheel, hardware.rightWheel, driver.left_stick_y, driver.right_stick_y);
+        Tank.Motor2(config.leftWheel, config.rightWheel, driver.left_stick_y, driver.right_stick_y);
     }
 
 }

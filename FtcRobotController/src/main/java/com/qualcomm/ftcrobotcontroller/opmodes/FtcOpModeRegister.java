@@ -8,18 +8,18 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
  */
 public class FtcOpModeRegister implements OpModeRegister {
 
-  /**
-   * The Op Mode Manager will call this method when it wants a list of all
-   * available op modes. Add your op mode to the list to enable it.
-   *
-   * @param manager op mode manager
-   */
+    /**
+     * The Op Mode Manager will call this method when it wants a list of all
+     * available op modes. Add your op mode to the list to enable it.
+     *
+     * @param manager op mode manager
+     */
 
-  public void register(OpModeManager manager) {
-      manager.register("TeleOp", teleOp.class);
-      manager.register("Autonomous Red", redMountain.class);
-      manager.register("Autonomous Blue", blueMountain.class);
-      manager.register("Test", driveForwards.class);
+    public void register(OpModeManager manager) {
+        manager.register("TeleOp", TeleOp.class);
+        manager.register("Autonomous Red", RedMountain.class);
+        manager.register("Autonomous Blue", BlueMountain.class);
+        manager.register("Test", DriveForwards.class);
 
-  }
+    }
 }
