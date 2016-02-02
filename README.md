@@ -19,7 +19,6 @@ For technical questions regarding the SDK, please visit the FTC Technology forum
   http://ftcforum.usfirst.org/forumdisplay.php?156-FTC-Technology
 
 In this latest version of the FTC SDK (20150803_001) the following changes should be noted:
-
  * New user interfaces for FTC Driver Station and FTC Robot Controller apps.
  * An init() method is added to the OpMode class.
    - For this release, init() is triggered right before the start() method.
