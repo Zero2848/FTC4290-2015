@@ -15,18 +15,11 @@ public class TeleOp extends OpMode {
     double winchPower = 0, leftPosition = Hardware.leftServoTop, rightPosition = Hardware.rightServoTop, climberPosition = Hardware.climberBottom,
             anglerPower = 0, stopperPosition = Hardware.stopperOff, leftGPosition = Hardware.leftGUp, rightGPosition = Hardware.rightGUp;
 
-    public void resetEncoder(DcMotor m) {
-        while (m.getCurrentPosition() != 0) {
-            m.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        }
-        m.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-    }
-
     public void grabbers() {
         if (driver.x == ButtonState.PRESSED && leftGPosition != Hardware.leftGDown) {
             leftGPosition = Hardware.leftGDown;
             rightGPosition = Hardware.rightGDown;
-        } else if (driver.x == ButtonState.PRESSED && leftGPosition != Hardware.leftGUp) {
+        } else if (driver.x == ButtonState.PRESSED) {
             leftGPosition = Hardware.leftGUp;
             rightGPosition = Hardware.rightGUp;
         }
@@ -35,7 +28,7 @@ public class TeleOp extends OpMode {
     public void climberDump() {
         if (operator.y == ButtonState.PRESSED && climberPosition != Hardware.climberTop) {
             climberPosition = Hardware.climberTop;
-        } else if (operator.y == ButtonState.PRESSED && climberPosition != Hardware.climberBottom) {
+        } else if (operator.y == ButtonState.PRESSED) {
             climberPosition = Hardware.climberBottom;
         }
 
@@ -44,7 +37,7 @@ public class TeleOp extends OpMode {
     public void leftServo() {
         if (operator.x == ButtonState.PRESSED && leftPosition != Hardware.leftServoTop) {
             leftPosition = Hardware.leftServoTop;
-        } else if (operator.x == ButtonState.PRESSED && leftPosition != Hardware.leftServoBottom) {
+        } else if (operator.x == ButtonState.PRESSED) {
             leftPosition = Hardware.leftServoBottom;
         }
     }
@@ -52,7 +45,7 @@ public class TeleOp extends OpMode {
     public void rightServo() {
         if (operator.b == ButtonState.PRESSED && rightPosition != Hardware.rightServoTop) {
             rightPosition = Hardware.rightServoTop;
-        } else if (operator.b == ButtonState.PRESSED && rightPosition != Hardware.rightServoBottom) {
+        } else if (operator.b == ButtonState.PRESSED) {
             rightPosition = Hardware.rightServoBottom;
         }
     }
@@ -60,7 +53,7 @@ public class TeleOp extends OpMode {
     public void stopper() {
         if (operator.a == ButtonState.PRESSED && stopperPosition != Hardware.stopperOn) {
             stopperPosition = Hardware.stopperOn;
-        } else if (operator.a == ButtonState.PRESSED && stopperPosition != Hardware.stopperOff) {
+        } else if (operator.a == ButtonState.PRESSED) {
             stopperPosition = Hardware.stopperOff;
         }
     }
@@ -89,8 +82,50 @@ public class TeleOp extends OpMode {
         }
     }
 
-    public void displayTelemetry() {
+    public void housekeeping() {
+        driver.update(gamepad1);
+        operator.update(gamepad2);
+        displayTelemetry();
+    }
 
+    @Override
+    public void init() {
+        config = new Hardware(hardwareMap);
+        driver = new Controller(gamepad1);
+        operator = new Controller(gamepad2);
+    }
+
+    @Override
+    public void loop() {
+        housekeeping();
+
+        grabbers();//source of error
+        config.rightGrabber.setPosition(rightGPosition);
+        config.leftGrabber.setPosition(leftGPosition);
+
+        climberDump();
+        config.climber.setPosition(climberPosition);
+
+        leftServo();
+        config.climberLeft.setPosition(leftPosition);
+
+        rightServo();
+        config.climberRight.setPosition(rightPosition);
+
+        stopper();
+        config.stopper.setPosition(stopperPosition);
+
+        winch();
+        config.winch1.setPower(winchPower);
+        config.winch2.setPower(winchPower);
+
+        angler();
+        config.angler.setPower(anglerPower);
+
+        Tank.motor2(config.leftWheel, config.rightWheel, driver.left_stick_y, driver.right_stick_y);
+    }
+
+    public void displayTelemetry() {
         if (leftPosition == Hardware.leftServoTop) {
             telemetry.addData("Left Servo Is", "Off");
         } else if (leftPosition == Hardware.leftServoBottom) {
@@ -142,46 +177,4 @@ public class TeleOp extends OpMode {
         telemetry.addData("Winch Power: ", winchPower);
         telemetry.addData("Angler Power:", anglerPower);
     }
-
-    public void housekeeping() {
-        driver.update(gamepad1);
-        operator.update(gamepad2);
-        displayTelemetry();
-    }
-
-    @Override
-    public void init() {
-        config = new Hardware(hardwareMap);
-        driver = new Controller(gamepad1);
-        operator = new Controller(gamepad2);
-    }
-
-    @Override
-    public void loop() {
-        housekeeping();
-
-        grabbers();//source of error
-        config.rightGrabber.setPosition(rightGPosition);
-        config.leftGrabber.setPosition(leftGPosition);
-
-        climberDump();
-        config.climber.setPosition(climberPosition);
-
-        leftServo();
-        config.climberLeft.setPosition(leftPosition);
-        rightServo();
-        config.climberRight.setPosition(rightPosition);
-        stopper();
-        config.stopper.setPosition(stopperPosition);
-
-        winch();
-        config.winch1.setPower(winchPower);
-        config.winch2.setPower(winchPower);
-
-        angler();
-        config.angler.setPower(anglerPower);
-
-        Tank.Motor2(config.leftWheel, config.rightWheel, driver.left_stick_y, driver.right_stick_y);
-    }
-
 }
