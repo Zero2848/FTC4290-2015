@@ -17,9 +17,6 @@ public class FtcOpModeRegister implements OpModeRegister {
 
     public void register(OpModeManager manager) {
         manager.register("TeleOp", TeleOp.class);
-        manager.register("Autonomous Red", RedMountain.class);
         manager.register("Autonomous Blue", BlueMountain.class);
-        manager.register("Test", DriveForwards.class);
-
     }
 }

@@ -1,5 +1,6 @@
 package com.qualcomm.ftcrobotcontroller;
 
+import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -7,17 +8,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 public class Hardware {
-    //final static int winchCap = 5000, winchLow = 80;
-    public static final int winchCap = 100000000, winchLow = -100000000;
-    public static final int anglerCap = -8400, anglerLow = 450;
     public DcMotor leftWheel, rightWheel, winch1, winch2, angler;
     public Servo climberLeft, climberRight, stopper, climber, leftGrabber, rightGrabber;
-    public static final double leftServoTop = .97, leftServoBottom = .25,
-            rightServoTop = .05, rightServoBottom = .75,
-            climberTop = .01, climberBottom = .99,
-            stopperOn = .4, stopperOff = .9,
-            leftGUp = 1.0, leftGDown = 0.0,
-            rightGUp = 0.0, rightGDown = 1.0;
+    public AHRS navx;
+    public static final double LEFT_SERVO_TOP = .97, LEFT_SERVO_BOTTOM = .25,
+            RIGHT_SERVO_TOP = .05, RIGHT_SERVO_BOTTOM = .75,
+            CLIMBER_TOP = .01, CLIMBER_BOTTOM = .99,
+            STOPPER_ON = .4, STOPPER_OFF = .9,
+            LEFT_GRABBER_UP = 1.0, LEFT_GRABBER_DOWN = 0.0,
+            RIGHT_GRABBER_UP = 0.0, RIGHT_GRABBER_DOWN = 1.0;
+    private final int NAVX_DIM_I2C_PORT = 1;
+    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
     public Hardware(HardwareMap hardwareMap) {
         this.leftGrabber = hardwareMap.servo.get("lg");
@@ -40,10 +41,14 @@ public class Hardware {
             this.rightWheel.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         }//gives Hardware the time to reset
         this.rightWheel.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        this.climber.setPosition(climberBottom);
-        this.climberRight.setPosition(rightServoTop);
-        this.climberLeft.setPosition(leftServoTop);
-        this.stopper.setPosition(stopperOff);
+        this.climber.setPosition(CLIMBER_BOTTOM);
+        this.climberRight.setPosition(RIGHT_SERVO_TOP);
+        this.climberLeft.setPosition(LEFT_SERVO_TOP);
+        this.stopper.setPosition(STOPPER_OFF);
+        AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
+                NAVX_DIM_I2C_PORT,
+                AHRS.DeviceDataType.kProcessedData,
+                NAVX_DEVICE_UPDATE_RATE_HZ);
     }
 
 }

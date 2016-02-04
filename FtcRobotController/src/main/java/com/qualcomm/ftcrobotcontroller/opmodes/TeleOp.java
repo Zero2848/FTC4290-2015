@@ -5,68 +5,60 @@ import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
 import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 
 public class TeleOp extends OpMode {
     Hardware config;
     Controller driver, operator;
 
-    double winchPower = 0, leftPosition = Hardware.leftServoTop, rightPosition = Hardware.rightServoTop, climberPosition = Hardware.climberBottom,
-            anglerPower = 0, stopperPosition = Hardware.stopperOff, leftGPosition = Hardware.leftGUp, rightGPosition = Hardware.rightGUp;
+    double winchPower = 0, leftPosition = Hardware.LEFT_SERVO_TOP, rightPosition = Hardware.RIGHT_SERVO_TOP, climberPosition = Hardware.CLIMBER_BOTTOM,
+            anglerPower = 0, stopperPosition = Hardware.STOPPER_OFF, leftGPosition = Hardware.LEFT_GRABBER_UP, rightGPosition = Hardware.RIGHT_GRABBER_UP;
 
     public void grabbers() {
-        if (driver.x == ButtonState.PRESSED && leftGPosition != Hardware.leftGDown) {
-            leftGPosition = Hardware.leftGDown;
-            rightGPosition = Hardware.rightGDown;
+        if (driver.x == ButtonState.PRESSED && leftGPosition != Hardware.LEFT_GRABBER_DOWN) {
+            leftGPosition = Hardware.LEFT_GRABBER_DOWN;
+            rightGPosition = Hardware.RIGHT_GRABBER_DOWN;
         } else if (driver.x == ButtonState.PRESSED) {
-            leftGPosition = Hardware.leftGUp;
-            rightGPosition = Hardware.rightGUp;
+            leftGPosition = Hardware.LEFT_GRABBER_UP;
+            rightGPosition = Hardware.RIGHT_GRABBER_UP;
         }
     }
 
     public void climberDump() {
-        if (operator.y == ButtonState.PRESSED && climberPosition != Hardware.climberTop) {
-            climberPosition = Hardware.climberTop;
+        if (operator.y == ButtonState.PRESSED && climberPosition != Hardware.CLIMBER_TOP) {
+            climberPosition = Hardware.CLIMBER_TOP;
         } else if (operator.y == ButtonState.PRESSED) {
-            climberPosition = Hardware.climberBottom;
+            climberPosition = Hardware.CLIMBER_BOTTOM;
         }
 
     }
 
     public void leftServo() {
-        if (operator.x == ButtonState.PRESSED && leftPosition != Hardware.leftServoTop) {
-            leftPosition = Hardware.leftServoTop;
+        if (operator.x == ButtonState.PRESSED && leftPosition != Hardware.LEFT_SERVO_TOP) {
+            leftPosition = Hardware.LEFT_SERVO_TOP;
         } else if (operator.x == ButtonState.PRESSED) {
-            leftPosition = Hardware.leftServoBottom;
+            leftPosition = Hardware.LEFT_SERVO_BOTTOM;
         }
     }
 
     public void rightServo() {
-        if (operator.b == ButtonState.PRESSED && rightPosition != Hardware.rightServoTop) {
-            rightPosition = Hardware.rightServoTop;
+        if (operator.b == ButtonState.PRESSED && rightPosition != Hardware.RIGHT_SERVO_TOP) {
+            rightPosition = Hardware.RIGHT_SERVO_TOP;
         } else if (operator.b == ButtonState.PRESSED) {
-            rightPosition = Hardware.rightServoBottom;
+            rightPosition = Hardware.RIGHT_SERVO_BOTTOM;
         }
     }
 
     public void stopper() {
-        if (operator.a == ButtonState.PRESSED && stopperPosition != Hardware.stopperOn) {
-            stopperPosition = Hardware.stopperOn;
+        if (operator.a == ButtonState.PRESSED && stopperPosition != Hardware.STOPPER_ON) {
+            stopperPosition = Hardware.STOPPER_ON;
         } else if (operator.a == ButtonState.PRESSED) {
-            stopperPosition = Hardware.stopperOff;
+            stopperPosition = Hardware.STOPPER_OFF;
         }
     }
 
     public void winch() {
-        if (Math.abs(operator.right_stick_y) > .1 && stopperPosition != Hardware.stopperOn) {
-            if (config.winch2.getCurrentPosition() < Hardware.winchCap && operator.right_stick_y > 0) {
-                winchPower = operator.right_stick_y;
-            } else if (config.winch2.getCurrentPosition() > Hardware.winchLow && operator.right_stick_y < 0) {
-                winchPower = operator.right_stick_y;
-            } else {
-                winchPower = 0;
-            }
+        if (Math.abs(operator.right_stick_y) > .1 && stopperPosition != Hardware.STOPPER_ON) {
+            winchPower = operator.right_stick_y;
         } else {
             winchPower = 0;
         }
@@ -99,7 +91,7 @@ public class TeleOp extends OpMode {
     public void loop() {
         housekeeping();
 
-        grabbers();//source of error
+        grabbers();
         config.rightGrabber.setPosition(rightGPosition);
         config.leftGrabber.setPosition(leftGPosition);
 
@@ -126,47 +118,47 @@ public class TeleOp extends OpMode {
     }
 
     public void displayTelemetry() {
-        if (leftPosition == Hardware.leftServoTop) {
+        if (leftPosition == Hardware.LEFT_SERVO_TOP) {
             telemetry.addData("Left Servo Is", "Off");
-        } else if (leftPosition == Hardware.leftServoBottom) {
+        } else if (leftPosition == Hardware.LEFT_SERVO_BOTTOM) {
             telemetry.addData("Left Servo Is", "On");
         } else {
             telemetry.addData("Left Servo Is", "Not Connected!");
         }
 
-        if (leftGPosition == Hardware.leftGUp) {
+        if (leftGPosition == Hardware.LEFT_GRABBER_UP) {
             telemetry.addData("Left Grabber Is", "Up");
-        } else if (leftGPosition == Hardware.leftGDown) {
+        } else if (leftGPosition == Hardware.LEFT_GRABBER_DOWN) {
             telemetry.addData("Left Grabber Is", "Down");
         } else {
             telemetry.addData("Left Grabber Is", "Not Connected!");
         }
-        if (rightGPosition == Hardware.rightGDown) {
+        if (rightGPosition == Hardware.RIGHT_GRABBER_DOWN) {
             telemetry.addData("Right Grabber Is", "Down");
-        } else if (rightGPosition == Hardware.rightGUp) {
+        } else if (rightGPosition == Hardware.RIGHT_GRABBER_UP) {
             telemetry.addData("Right Grabber Is", "Up");
         } else {
             telemetry.addData("Left Grabber Is", "Not Connected!");
         }
 
-        if (rightPosition == Hardware.rightServoTop) {
+        if (rightPosition == Hardware.RIGHT_SERVO_TOP) {
             telemetry.addData("Right Servo Is", "Off");
-        } else if (rightPosition == Hardware.rightServoBottom) {
+        } else if (rightPosition == Hardware.RIGHT_SERVO_BOTTOM) {
             telemetry.addData("Right Servo Is", "On");
         } else {
             telemetry.addData("Right Servo Is", "Not Connected!");
         }
 
-        if (climberPosition == Hardware.climberBottom) {
+        if (climberPosition == Hardware.CLIMBER_BOTTOM) {
             telemetry.addData("Climber Servo Is", "Off");
-        } else if (climberPosition == Hardware.climberTop) {
+        } else if (climberPosition == Hardware.CLIMBER_TOP) {
             telemetry.addData("Climber Servo Is", "On");
         } else {
             telemetry.addData("Climber Servo Is", "Not Connected!");
         }
-        if (stopperPosition == Hardware.stopperOn) {
+        if (stopperPosition == Hardware.STOPPER_ON) {
             telemetry.addData("Stopper Servo Is", "On");
-        } else if (stopperPosition == Hardware.stopperOff) {
+        } else if (stopperPosition == Hardware.STOPPER_OFF) {
             telemetry.addData("Stopper Servo Is", "Off");
         }
         telemetry.addData("Left Motor Encoder: ", config.leftWheel.getCurrentPosition());
