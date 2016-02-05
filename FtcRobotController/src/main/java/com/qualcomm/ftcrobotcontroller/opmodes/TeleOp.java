@@ -13,67 +13,70 @@ public class TeleOp extends OpMode {
     double winchPower = 0, leftPosition = Hardware.LEFT_SERVO_TOP, rightPosition = Hardware.RIGHT_SERVO_TOP, climberPosition = Hardware.CLIMBER_BOTTOM,
             anglerPower = 0, stopperPosition = Hardware.STOPPER_OFF, leftGPosition = Hardware.LEFT_GRABBER_UP, rightGPosition = Hardware.RIGHT_GRABBER_UP;
 
-    public void grabbers() {
-        if (driver.x == ButtonState.PRESSED && leftGPosition != Hardware.LEFT_GRABBER_DOWN) {
-            leftGPosition = Hardware.LEFT_GRABBER_DOWN;
-            rightGPosition = Hardware.RIGHT_GRABBER_DOWN;
-        } else if (driver.x == ButtonState.PRESSED) {
-            leftGPosition = Hardware.LEFT_GRABBER_UP;
-            rightGPosition = Hardware.RIGHT_GRABBER_UP;
+    public static double grabberL(Controller controller, double pos) {
+        if (controller.x == ButtonState.PRESSED && pos != Hardware.LEFT_GRABBER_DOWN) {
+            return Hardware.LEFT_GRABBER_DOWN;
+        } else if (controller.x == ButtonState.PRESSED) {
+            return Hardware.LEFT_GRABBER_UP;
         }
+        return pos;
     }
-
-    public void climberDump() {
-        if (operator.y == ButtonState.PRESSED && climberPosition != Hardware.CLIMBER_TOP) {
-            climberPosition = Hardware.CLIMBER_TOP;
-        } else if (operator.y == ButtonState.PRESSED) {
-            climberPosition = Hardware.CLIMBER_BOTTOM;
+    public static double grabberR(Controller controller, double pos) {
+        if (controller.x == ButtonState.PRESSED && pos != Hardware.RIGHT_GRABBER_DOWN) {
+            return Hardware.RIGHT_GRABBER_DOWN;
+        } else if (controller.x == ButtonState.PRESSED) {
+            return Hardware.RIGHT_GRABBER_UP;
         }
-
+        return pos;
     }
-
-    public void leftServo() {
-        if (operator.x == ButtonState.PRESSED && leftPosition != Hardware.LEFT_SERVO_TOP) {
-            leftPosition = Hardware.LEFT_SERVO_TOP;
-        } else if (operator.x == ButtonState.PRESSED) {
-            leftPosition = Hardware.LEFT_SERVO_BOTTOM;
+    public static double climberDump(Controller controller, double pos) {
+        if (controller.y == ButtonState.PRESSED && pos != Hardware.CLIMBER_TOP) {
+            return Hardware.CLIMBER_TOP;
+        } else if (controller.y == ButtonState.PRESSED) {
+            return Hardware.CLIMBER_BOTTOM;
         }
+        return pos;
     }
-
-    public void rightServo() {
-        if (operator.b == ButtonState.PRESSED && rightPosition != Hardware.RIGHT_SERVO_TOP) {
-            rightPosition = Hardware.RIGHT_SERVO_TOP;
-        } else if (operator.b == ButtonState.PRESSED) {
-            rightPosition = Hardware.RIGHT_SERVO_BOTTOM;
+    public static double leftServo(Controller controller, double pos) {
+        if (controller.x == ButtonState.PRESSED && pos != Hardware.LEFT_SERVO_TOP) {
+            return Hardware.LEFT_SERVO_TOP;
+        } else if (controller.x == ButtonState.PRESSED) {
+            return Hardware.LEFT_SERVO_BOTTOM;
         }
+        return pos;
     }
-
-    public void stopper() {
-        if (operator.a == ButtonState.PRESSED && stopperPosition != Hardware.STOPPER_ON) {
-            stopperPosition = Hardware.STOPPER_ON;
-        } else if (operator.a == ButtonState.PRESSED) {
-            stopperPosition = Hardware.STOPPER_OFF;
+    public static double rightServo(Controller controller, double pos) {
+        if (controller.b == ButtonState.PRESSED && pos != Hardware.RIGHT_SERVO_TOP) {
+            return Hardware.RIGHT_SERVO_TOP;
+        } else if (controller.b == ButtonState.PRESSED) {
+            return Hardware.RIGHT_SERVO_BOTTOM;
         }
+        return pos;
     }
-
-    public void winch() {
-        if (Math.abs(operator.right_stick_y) > .1 && stopperPosition != Hardware.STOPPER_ON) {
-            winchPower = operator.right_stick_y;
+    public static double stopper(Controller controller, double pos) {
+        if (controller.a == ButtonState.PRESSED && pos != Hardware.STOPPER_ON) {
+            return Hardware.STOPPER_ON;
+        } else if (controller.a == ButtonState.PRESSED) {
+            return Hardware.STOPPER_OFF;
+        }
+        return pos;
+    }
+    public static double winch(Controller controller) {
+        if (Math.abs(controller.right_stick_y) > .1) {
+            return controller.right_stick_y;
         } else {
-            winchPower = 0;
+            return 0;
         }
     }
-
-    public void angler() {
-        if (driver.y == ButtonState.HELD) {//go up
-            anglerPower = .75;
-        } else if (driver.a == ButtonState.HELD) {//go down
-            anglerPower = -.75;
+    public static double angler(Controller controller) {
+        if (controller.y == ButtonState.HELD) {//go up
+            return  .75;
+        } else if (controller.a == ButtonState.HELD) {//go down
+            return -.75;
         } else {
-            anglerPower = 0;
+            return 0;
         }
     }
-
     public void housekeeping() {
         driver.update(gamepad1);
         operator.update(gamepad2);
@@ -91,28 +94,20 @@ public class TeleOp extends OpMode {
     public void loop() {
         housekeeping();
 
-        grabbers();
-        config.rightGrabber.setPosition(rightGPosition);
-        config.leftGrabber.setPosition(leftGPosition);
+        config.leftGrabber.setPosition(grabberL(driver, config.leftGrabber.getPosition()));
+        config.rightGrabber.setPosition(grabberR(driver, config.rightGrabber.getPosition()));
 
-        climberDump();
-        config.climber.setPosition(climberPosition);
+        config.climber.setPosition(climberDump(operator, config.climber.getPosition()));
 
-        leftServo();
-        config.climberLeft.setPosition(leftPosition);
+        config.climberLeft.setPosition(leftServo(operator, config.climberLeft.getPosition()));
+        config.climberRight.setPosition(rightServo(operator, config.climberRight.getPosition()));
 
-        rightServo();
-        config.climberRight.setPosition(rightPosition);
+        config.stopper.setPosition(stopper(operator, config.stopper.getPosition()));
 
-        stopper();
-        config.stopper.setPosition(stopperPosition);
+        config.winch1.setPower(winch(operator));
+        config.winch2.setPower(winch(operator));
 
-        winch();
-        config.winch1.setPower(winchPower);
-        config.winch2.setPower(winchPower);
-
-        angler();
-        config.angler.setPower(anglerPower);
+        config.angler.setPower(angler(driver));
 
         Tank.motor2(config.leftWheel, config.rightWheel, driver.left_stick_y, driver.right_stick_y);
     }
