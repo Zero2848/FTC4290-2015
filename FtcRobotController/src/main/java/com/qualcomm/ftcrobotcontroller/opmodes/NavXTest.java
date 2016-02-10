@@ -51,6 +51,5 @@ public class NavXTest extends LinearOpMode {
 
         config.leftWheel.setPower(0);
         config.rightWheel.setPower(0);
-        waitForStart();
     }
 }
