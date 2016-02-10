@@ -3,6 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.lasarobotics.library.controller.ButtonState;
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
+import com.qualcomm.ftcrobotcontroller.Auto;
 import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -11,30 +12,6 @@ public class TeleOp extends OpMode {
     Controller driver, operator;
     boolean grabberdown = false, leftS = false, rightS = false, climberB = false;
 
-    public static double climberDump(Controller cont, double pos) {
-        if (cont.y == ButtonState.PRESSED && pos != Hardware.CLIMBER_TOP) {
-            return Hardware.CLIMBER_TOP;
-        } else if (cont.y == ButtonState.PRESSED) {
-            return Hardware.CLIMBER_BOTTOM;
-        }
-        return pos;
-    }
-    public static double leftServo(Controller cont, double pos) {
-        if (cont.x == ButtonState.PRESSED && pos != Hardware.LEFT_SERVO_TOP) {
-            return Hardware.LEFT_SERVO_TOP;
-        } else if (cont.x == ButtonState.PRESSED) {
-            return Hardware.LEFT_SERVO_BOTTOM;
-        }
-        return pos;
-    }
-    public static double rightServo(Controller cont, double pos) {
-        if (cont.b == ButtonState.PRESSED && pos != Hardware.RIGHT_SERVO_TOP) {
-            return Hardware.RIGHT_SERVO_TOP;
-        } else if (cont.b == ButtonState.PRESSED) {
-            return Hardware.RIGHT_SERVO_BOTTOM;
-        }
-        return pos;
-    }
     public static double stopper(Controller cont, double pos) {
         if (cont.a == ButtonState.PRESSED && pos != Hardware.STOPPER_ON) {
             return Hardware.STOPPER_ON;
@@ -71,11 +48,18 @@ public class TeleOp extends OpMode {
         operator = new Controller();
         config.leftGrabber.setPosition(Hardware.LEFT_GRABBER_UP);
         config.rightGrabber.setPosition(Hardware.RIGHT_GRABBER_UP);
+        config.navx.zeroYaw();
     }
 
     @Override
     public void loop() {
         housekeeping();
+
+        if(Hardware.navxenabled){
+
+            telemetry.addData("NavX Yaw:", Auto.convertDegNavX(config.navx.getYaw()));
+            telemetry.addData("NavX", config.navx.toString());
+        }
 
         if (driver.x == ButtonState.PRESSED){
             if (grabberdown){
@@ -98,8 +82,10 @@ public class TeleOp extends OpMode {
             else{
                 config.climberLeft.setPosition(Hardware.LEFT_SERVO_BOTTOM);
                 leftS = true;
-            }
+            }} else if(operator.dpad_left == ButtonState.PRESSED){
+            config.climberLeft.setPosition(Hardware.LEFT_SERVO_LOWEST);
         }
+
 
         if (operator.b == ButtonState.PRESSED){
             if (rightS){
@@ -110,6 +96,8 @@ public class TeleOp extends OpMode {
                 config.climberRight.setPosition(Hardware.RIGHT_SERVO_BOTTOM);
                 rightS = true;
             }
+        } else if(operator.dpad_right == ButtonState.PRESSED){
+            config.climberRight.setPosition(Hardware.RIGHT_SERVO_LOWEST);
         }
 
 
@@ -123,20 +111,16 @@ public class TeleOp extends OpMode {
                 climberB = true;
             }
         }
-
-//        config.climber.setPosition(climberDump(operator, config.climber.getPosition()));
-
-//        config.climberLeft.setPosition(leftServo(operator, config.climberLeft.getPosition()));
-//        config.climberRight.setPosition(rightServo(operator, config.climberRight.getPosition()));
-
         config.stopper.setPosition(stopper(operator, config.stopper.getPosition()));
 
         if(operator.right_bumper == ButtonState.HELD) {
-            config.winch1.setPower(winch(operator) / 4);
-            config.winch2.setPower(winch(operator) / 4);
+            telemetry.addData("POWER", "slow");
+            config.winch1.setPower(operator.right_stick_y/2);
+            config.winch2.setPower(operator.right_stick_y/2);
         } else {
-            config.winch1.setPower(winch(operator));
-            config.winch2.setPower(winch(operator));
+            telemetry.addData("POWER", "fast");
+            config.winch1.setPower(operator.right_stick_y);
+            config.winch2.setPower(operator.right_stick_y);
         }
 
         config.angler.setPower(angler(driver));
@@ -144,8 +128,10 @@ public class TeleOp extends OpMode {
         telemetry.addData("gr", config.rightGrabber.getPosition());
 
         if(driver.left_bumper == ButtonState.HELD || driver.right_bumper == ButtonState.HELD) {
+            telemetry.addData("DRIVE", "SLOW");
             Tank.motor2(config.leftWheel, config.rightWheel, driver.left_stick_y / 4, driver.right_stick_y / 4);
         } else {
+            telemetry.addData("DRIVE", "FAST");
             Tank.motor2(config.leftWheel, config.rightWheel, driver.left_stick_y, driver.right_stick_y);
         }
 

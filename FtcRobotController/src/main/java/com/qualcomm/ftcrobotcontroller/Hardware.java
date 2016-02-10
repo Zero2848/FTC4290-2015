@@ -15,15 +15,17 @@ public class Hardware {
     public DcMotor leftWheel, rightWheel, winch1, winch2, angler;
     public Servo climberLeft, climberRight, stopper, climber, leftGrabber, rightGrabber;
     public AHRS navx;
-    public static final double LEFT_SERVO_TOP = .95, LEFT_SERVO_BOTTOM = .25,
-            RIGHT_SERVO_TOP = .05, RIGHT_SERVO_BOTTOM = .75,
+    public static boolean navxenabled = true;
+    public static final double
+            LEFT_SERVO_TOP = .95, LEFT_SERVO_BOTTOM = .25, LEFT_SERVO_LOWEST = 0.0,
+            RIGHT_SERVO_TOP = .05, RIGHT_SERVO_BOTTOM = .75, RIGHT_SERVO_LOWEST = 1.0,
             CLIMBER_TOP = .01, CLIMBER_BOTTOM = .99,
             STOPPER_ON = .4, STOPPER_OFF = .9,
 
             //DONT TOUCH THESE VARIABLES. THEY WORK
             LEFT_GRABBER_UP = .08, LEFT_GRABBER_DOWN = .9,
             RIGHT_GRABBER_UP = 1, RIGHT_GRABBER_DOWN = .2;
-    private final int NAVX_DIM_I2C_PORT = 1;
+    private final int NAVX_DIM_I2C_PORT = 2;
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
     public Hardware(HardwareMap hardwareMap) {
@@ -50,12 +52,15 @@ public class Hardware {
         this.climber.setPosition(CLIMBER_BOTTOM);
         this.climberRight.setPosition(RIGHT_SERVO_TOP);
         this.climberLeft.setPosition(LEFT_SERVO_TOP);
+        this.leftGrabber.setPosition(LEFT_GRABBER_UP);
+        this.rightGrabber.setPosition(RIGHT_GRABBER_UP);
         this.stopper.setPosition(STOPPER_OFF);
-        /*AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
-                NAVX_DIM_I2C_PORT,
-                AHRS.DeviceDataType.kProcessedData,
-                NAVX_DEVICE_UPDATE_RATE_HZ);
-        */
+        if(navxenabled){
+            navx = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
+                    NAVX_DIM_I2C_PORT,
+                    AHRS.DeviceDataType.kProcessedData,
+                    NAVX_DEVICE_UPDATE_RATE_HZ);
+        }
     }
 
 }
