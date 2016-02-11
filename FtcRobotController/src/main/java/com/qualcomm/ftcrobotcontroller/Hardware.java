@@ -21,8 +21,6 @@ public class Hardware {
             RIGHT_SERVO_TOP = .05, RIGHT_SERVO_BOTTOM = .75, RIGHT_SERVO_LOWEST = 1.0,
             CLIMBER_TOP = .01, CLIMBER_BOTTOM = .99,
             STOPPER_ON = .4, STOPPER_OFF = .9,
-
-            //DONT TOUCH THESE VARIABLES. THEY WORK
             LEFT_GRABBER_UP = .08, LEFT_GRABBER_DOWN = .9,
             RIGHT_GRABBER_UP = 1, RIGHT_GRABBER_DOWN = .2;
     private final int NAVX_DIM_I2C_PORT = 2;
@@ -37,11 +35,11 @@ public class Hardware {
         this.winch2 = hardwareMap.dcMotor.get("w2");
         this.angler = hardwareMap.dcMotor.get("a");
         this.angler.setDirection(DcMotor.Direction.REVERSE);
-        this.climberLeft = hardwareMap.servo.get("6"); //?
+        this.climberLeft = hardwareMap.servo.get("6");
         this.climberRight = hardwareMap.servo.get("2");
         this.stopper = hardwareMap.servo.get("1");
         this.climber = hardwareMap.servo.get("3");
-        this.leftGrabber = hardwareMap.servo.get("5");      //?
+        this.leftGrabber = hardwareMap.servo.get("5");
         this.rightGrabber = hardwareMap.servo.get("4");
         this.winch2.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         this.angler.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);

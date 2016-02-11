@@ -3,13 +3,12 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import android.util.Log;
 
 import com.lasarobotics.library.util.MathUtil;
+import com.qualcomm.ftcrobotcontroller.Auto;
 import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 public class NavXTest extends LinearOpMode {
-    public final double leftPow = .45;
-    public final double rightPow = .4;
     private static final int TOLERANCE_DEGREES = 2;
 
     Hardware config;
@@ -20,7 +19,8 @@ public class NavXTest extends LinearOpMode {
         config = new Hardware(hardwareMap);
 
         waitForStart();
-        turnToDegNavX(90, .5);
+        Auto.driveTo(config, telemetry, 3000, -.5, -.5);
+        turnToDegNavX(45, .5);
 
         config.navx.close();
     }

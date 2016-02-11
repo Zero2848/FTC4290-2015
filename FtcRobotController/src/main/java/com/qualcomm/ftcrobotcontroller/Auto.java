@@ -15,22 +15,11 @@ public class Auto {
 
     public static void driveTo(Hardware config, Telemetry telemetry,int ticks, double powerLeft, double powerRight) throws InterruptedException {
         double wheelPosition = 0;
-        while (wheelPosition != ticks) {
+        while (Math.abs(wheelPosition) < ticks) {
             wheelPosition = config.rightWheel.getCurrentPosition();
-            telemetry.addData("1", "wheel at: " + wheelPosition + " ticks.");
-            if (wheelPosition < ticks) {
-                telemetry.addData("2", "tick goal: " + (ticks));
-                telemetry.addData("3", "near");
-                config.leftWheel.setPower(powerLeft);
-                config.rightWheel.setPower(powerRight);
-            } else if (wheelPosition > ticks) {
-                telemetry.addData("2", "tick goal: " + (ticks));
-                telemetry.addData("3", "far");
-                config.leftWheel.setPower(-powerLeft);
-                config.rightWheel.setPower(-powerRight);
-            } else {
-                break;
-            }
+            telemetry.addData("Wheel at", wheelPosition + " ticks.");
+            config.leftWheel.setPower(powerLeft);
+            config.rightWheel.setPower(powerRight);
         }
         config.rightWheel.setPower(0);
         config.leftWheel.setPower(0);
