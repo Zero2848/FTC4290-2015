@@ -6,7 +6,7 @@ import com.lasarobotics.library.drive.Tank;
 import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-public class workingTele extends OpMode {
+public class WorkingTele extends OpMode {
     Hardware config;
     Controller driver, operator;
 

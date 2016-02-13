@@ -6,6 +6,7 @@ import com.lasarobotics.library.drive.Tank;
 import com.qualcomm.ftcrobotcontroller.Auto;
 import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class TeleOp extends OpMode {
     Hardware config;
@@ -54,6 +55,19 @@ public class TeleOp extends OpMode {
     @Override
     public void loop() {
         housekeeping();
+
+        if(driver.guide == ButtonState.PRESSED){
+            if(config.rightWheel.getDirection() == DcMotor.Direction.FORWARD){
+                config.rightWheel.setDirection(DcMotor.Direction.REVERSE);
+            } else {
+                config.rightWheel.setDirection(DcMotor.Direction.FORWARD);
+            }
+            if(config.leftWheel.getDirection() == DcMotor.Direction.FORWARD){
+                config.leftWheel.setDirection(DcMotor.Direction.REVERSE);
+            } else {
+                config.leftWheel.setDirection(DcMotor.Direction.FORWARD);
+            }
+        }
 
         if(Hardware.navxenabled){
 

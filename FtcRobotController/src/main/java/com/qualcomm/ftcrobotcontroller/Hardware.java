@@ -20,7 +20,7 @@ public class Hardware {
             LEFT_SERVO_TOP = .95, LEFT_SERVO_BOTTOM = .25, LEFT_SERVO_LOWEST = 0.0,
             RIGHT_SERVO_TOP = .05, RIGHT_SERVO_BOTTOM = .75, RIGHT_SERVO_LOWEST = 1.0,
             CLIMBER_TOP = .01, CLIMBER_BOTTOM = .99,
-            STOPPER_ON = .4, STOPPER_OFF = .9,
+            STOPPER_ON = .4, STOPPER_OFF = .1,
             LEFT_GRABBER_UP = .08, LEFT_GRABBER_DOWN = .9,
             RIGHT_GRABBER_UP = 1, RIGHT_GRABBER_DOWN = .2;
     private final int NAVX_DIM_I2C_PORT = 2;
