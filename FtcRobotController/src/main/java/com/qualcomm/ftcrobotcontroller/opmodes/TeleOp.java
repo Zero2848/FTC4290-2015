@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.util.Log;
+
 import com.lasarobotics.library.controller.ButtonState;
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
@@ -47,6 +49,7 @@ public class TeleOp extends OpMode {
         config = new Hardware(hardwareMap);
         driver = new Controller();
         operator = new Controller();
+
         config.leftGrabber.setPosition(Hardware.LEFT_GRABBER_UP);
         config.rightGrabber.setPosition(Hardware.RIGHT_GRABBER_UP);
         config.navx.zeroYaw();

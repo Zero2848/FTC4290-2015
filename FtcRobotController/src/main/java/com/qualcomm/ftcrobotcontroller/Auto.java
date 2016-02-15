@@ -14,6 +14,8 @@ public class Auto {
     private static final int TOLERANCE_DEGREES = 5;
 
     public static void driveTo(Hardware config, Telemetry telemetry,int ticks, double powerLeft, double powerRight) throws InterruptedException {
+        resetEncoder(config.leftWheel);
+        resetEncoder(config.rightWheel);
         double wheelPosition = 0;
         while (Math.abs(wheelPosition) < ticks) {
             wheelPosition = config.rightWheel.getCurrentPosition();
@@ -23,7 +25,6 @@ public class Auto {
         }
         config.rightWheel.setPower(0);
         config.leftWheel.setPower(0);
-
         resetEncoder(config.leftWheel);
         resetEncoder(config.rightWheel);
     }

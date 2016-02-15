@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller;
 
+import android.util.Log;
+
 import com.kauailabs.navx.ftc.AHRS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -43,9 +45,10 @@ public class Hardware {
         this.rightGrabber = hardwareMap.servo.get("4");
         this.winch2.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         this.angler.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        while (this.rightWheel.getCurrentPosition() != 0) {
-            this.rightWheel.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        }//gives Hardware the time to reset
+        //THIS CODE CAUSED AN INFINITE LOOP IN TELEOP
+        //while (this.rightWheel.getCurrentPosition() != 0) {
+        //    this.rightWheel.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        //}//gives Hardware the time to reset
         this.rightWheel.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         this.climber.setPosition(CLIMBER_BOTTOM);
         this.climberRight.setPosition(RIGHT_SERVO_TOP);
