@@ -1,7 +1,5 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import android.util.Log;
-
 import com.lasarobotics.library.controller.ButtonState;
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
