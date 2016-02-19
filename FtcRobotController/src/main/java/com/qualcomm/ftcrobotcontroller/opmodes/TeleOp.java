@@ -13,23 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class TeleOp extends OpMode {
     Hardware config;
     Controller driver, operator;
-    boolean grabberdown = false, leftS = false, rightS = false, climberB = false;
+    boolean grabberdown = false, leftS = false, rightS = false, climberB = false, stopperB = false;
 
-    public static double stopper(Controller cont, double pos) {
-        if (cont.a == ButtonState.PRESSED && pos != Hardware.STOPPER_ON) {
-            return Hardware.STOPPER_ON;
-        } else if (cont.a == ButtonState.PRESSED) {
-            return Hardware.STOPPER_OFF;
-        }
-        return pos;
-    }
-    public static double winch(Controller cont) {
-        if (Math.abs(cont.right_stick_y) > .1) {
-            return cont.right_stick_y;
-        } else {
-            return 0;
-        }
-    }
     public static double angler(Controller cont) {
         if (cont.y == ButtonState.HELD) {//go up
             return  .75;
@@ -59,6 +44,16 @@ public class TeleOp extends OpMode {
     public void loop() {
         housekeeping();
 
+
+        if (operator.a == ButtonState.PRESSED) {
+            if(stopperB){
+                config.stopper.setPosition(Hardware.STOPPER_ON);
+            } else {
+                config.stopper.setPosition(Hardware.STOPPER_OFF);
+            }
+            stopperB = !stopperB;
+        }
+
         if(driver.guide == ButtonState.PRESSED){
             if(config.rightWheel.getDirection() == DcMotor.Direction.FORWARD){
                 config.rightWheel.setDirection(DcMotor.Direction.REVERSE);
@@ -73,9 +68,8 @@ public class TeleOp extends OpMode {
         }
 
         if(Hardware.navxenabled){
-
+            telemetry.addData("NON CONVERTED", config.navx.getYaw());
             telemetry.addData("NavX Yaw:", Auto.convertDegNavX(config.navx.getYaw()));
-            telemetry.addData("NavX", config.navx.toString());
         }
 
         if (driver.x == ButtonState.PRESSED){
@@ -128,8 +122,6 @@ public class TeleOp extends OpMode {
                 climberB = true;
             }
         }
-        config.stopper.setPosition(stopper(operator, config.stopper.getPosition()));
-
         if(operator.right_bumper == ButtonState.HELD) {
             telemetry.addData("POWER", "slow");
             config.winch1.setPower(operator.right_stick_y/2);
@@ -141,7 +133,7 @@ public class TeleOp extends OpMode {
         }
 
         config.angler.setPower(angler(driver));
-        telemetry.addData("gl",config.leftGrabber.getPosition());
+        telemetry.addData("gl", config.leftGrabber.getPosition());
         telemetry.addData("gr", config.rightGrabber.getPosition());
 
         if(driver.left_bumper == ButtonState.HELD || driver.right_bumper == ButtonState.HELD) {
@@ -153,4 +145,9 @@ public class TeleOp extends OpMode {
         }
 
     }
+    public void stop() {
+        if (Hardware.navxenabled)
+            config.navx.close();
+    }
+
 }

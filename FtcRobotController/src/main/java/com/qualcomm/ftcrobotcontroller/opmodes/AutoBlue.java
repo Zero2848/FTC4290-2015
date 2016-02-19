@@ -6,19 +6,26 @@ import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
-public class RedBackwards extends LinearOpMode {
+public class AutoBlue extends LinearOpMode {
     private static final int TOLERANCE_DEGREES = 2;
 
     Hardware config;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
         config = new Hardware(hardwareMap);
 
         waitForStart();
-        turnToDegNavX(315, -.5);//might not work too well
-        Auto.driveTo(config, telemetry, 8000, -.5, -.5);
+        Auto.driveTo(config, telemetry, 6000, 1, 1);
+        turnToDegNavX(180, .25);
+        Auto.driveTo(config, telemetry, 2750, -.8, -.8);
+
+
+        waitOneFullHardwareCycle();
+        waitForNextHardwareCycle();
+        config.climber.setPosition(Hardware.CLIMBER_TOP);
+        sleep(3000);
+        config.climber.setPosition(Hardware.CLIMBER_BOTTOM);
 
         config.navx.close();
     }
@@ -45,9 +52,12 @@ public class RedBackwards extends LinearOpMode {
             telemetry.addData("Target Yaw", deg);
             if (MathUtil.inBounds(deg - TOLERANCE_DEGREES, deg + TOLERANCE_DEGREES, yaw))
                 arrived = true;
+            waitOneFullHardwareCycle();
         }
 
         config.leftWheel.setPower(0);
         config.rightWheel.setPower(0);
+        Auto.resetEncoder(config.leftWheel);
+        Auto.resetEncoder(config.rightWheel);
     }
 }

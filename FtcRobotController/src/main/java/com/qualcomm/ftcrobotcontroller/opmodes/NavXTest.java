@@ -19,10 +19,7 @@ public class NavXTest extends LinearOpMode {
         config = new Hardware(hardwareMap);
 
         waitForStart();
-        Auto.driveTo(config, telemetry, 8000, .5, .5);
         turnToDegNavX(45, .5);
-        config.climber.setPosition(Hardware.CLIMBER_TOP);
-
         config.navx.close();
     }
 
