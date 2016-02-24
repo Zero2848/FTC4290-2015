@@ -18,6 +18,7 @@ public class AutoDriveStraight extends LinearOpMode {
         config = new Hardware(hardwareMap);
 
         waitForStart();
+        sleep(10000);
         Auto.driveTo(config, telemetry, 8000, 1, 1);
         config.navx.close();
     }

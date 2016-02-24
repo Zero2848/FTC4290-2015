@@ -87,26 +87,32 @@ public class TeleOp extends OpMode {
             if (leftS){
                 config.climberLeft.setPosition(Hardware.LEFT_SERVO_TOP);
                 leftS = false;
+                telemetry.addData("left", "top");
             }
             else{
                 config.climberLeft.setPosition(Hardware.LEFT_SERVO_BOTTOM);
                 leftS = true;
+                telemetry.addData("right", "low");
             }} else if(operator.dpad_left == ButtonState.PRESSED){
             config.climberLeft.setPosition(Hardware.LEFT_SERVO_LOWEST);
+            telemetry.addData("right", "bottom");
         }
 
 
         if (operator.b == ButtonState.PRESSED){
             if (rightS){
                 config.climberRight.setPosition(Hardware.RIGHT_SERVO_TOP);
+                telemetry.addData("right", "top");
                 rightS = false;
             }
             else{
                 config.climberRight.setPosition(Hardware.RIGHT_SERVO_BOTTOM);
                 rightS = true;
+                telemetry.addData("right", "low");
             }
         } else if(operator.dpad_right == ButtonState.PRESSED){
             config.climberRight.setPosition(Hardware.RIGHT_SERVO_LOWEST);
+            telemetry.addData("right", "bottom");
         }
 
 
