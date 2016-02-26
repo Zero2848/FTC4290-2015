@@ -126,17 +126,20 @@ public class TeleOp extends OpMode {
                 climberB = true;
             }
         }
-        if(operator.right_bumper == ButtonState.HELD) {
-            telemetry.addData("POWER", "slow");
-            config.winch1.setPower(operator.right_stick_y/2);
-            config.winch2.setPower(operator.right_stick_y/2);
-        } else {
-            telemetry.addData("POWER", "fast");
-            config.winch1.setPower(operator.right_stick_y);
-            config.winch2.setPower(operator.right_stick_y);
+        if(!stopperB) {
+            if (operator.right_bumper == ButtonState.HELD) {
+                telemetry.addData("POWER", "slow");
+                config.winch1.setPower(operator.right_stick_y / 2);
+                config.winch2.setPower(operator.right_stick_y / 2);
+            } else {
+                telemetry.addData("POWER", "fast");
+                config.winch1.setPower(operator.right_stick_y);
+                config.winch2.setPower(operator.right_stick_y);
+            }
         }
 
         config.angler.setPower(angler(driver));
+
         telemetry.addData("gl", config.leftGrabber.getPosition());
         telemetry.addData("gr", config.rightGrabber.getPosition());
 
