@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class TeleOp extends OpMode {
     Hardware config;
     Controller driver, operator;
-    boolean grabberdown = false, leftS = false, rightS = false, climberB = false, stopperB = false;
+    boolean grabberdown = false, leftS = false, rightS = false, climberB = false, stopperIsOn = false;
 
     public static double angler(Controller cont) {
         if (cont.y == ButtonState.HELD) {//go up
@@ -42,15 +42,17 @@ public class TeleOp extends OpMode {
     public void loop() {
         housekeeping();
 
-
         if (operator.a == ButtonState.PRESSED) {
-            if(stopperB){
-                config.stopper.setPosition(Hardware.STOPPER_ON);
-            } else {
-                config.stopper.setPosition(Hardware.STOPPER_OFF);
-            }
-            stopperB = !stopperB;
+            stopperIsOn = !stopperIsOn;
         }
+        if(stopperIsOn){
+            config.stopper.setPosition(Hardware.STOPPER_ON);
+        } else {
+            config.stopper.setPosition(Hardware.STOPPER_OFF);
+        }
+        telemetry.addData("Stopper", "Off");
+        if(stopperIsOn)
+            telemetry.addData("Stopper", "On");
 
         if(driver.guide == ButtonState.PRESSED){
             if(config.rightWheel.getDirection() == DcMotor.Direction.FORWARD){
@@ -83,34 +85,34 @@ public class TeleOp extends OpMode {
             }
         }
 
-        if (operator.x == ButtonState.PRESSED){
-            if (leftS){
+        if (operator.x == ButtonState.PRESSED) {
+            if (leftS) {
                 config.climberLeft.setPosition(Hardware.LEFT_SERVO_TOP);
                 leftS = false;
                 telemetry.addData("left", "top");
-            }
-            else{
+            } else {
                 config.climberLeft.setPosition(Hardware.LEFT_SERVO_BOTTOM);
                 leftS = true;
                 telemetry.addData("right", "low");
-            }} else if(operator.dpad_left == ButtonState.PRESSED){
+            }
+        }
+        if(operator.dpad_left == ButtonState.PRESSED || operator.dpad_left == ButtonState.HELD){
             config.climberLeft.setPosition(Hardware.LEFT_SERVO_LOWEST);
             telemetry.addData("right", "bottom");
         }
-
-
-        if (operator.b == ButtonState.PRESSED){
-            if (rightS){
+        
+        if (operator.b == ButtonState.PRESSED) {
+            if (rightS) {
                 config.climberRight.setPosition(Hardware.RIGHT_SERVO_TOP);
                 telemetry.addData("right", "top");
                 rightS = false;
-            }
-            else{
+            } else {
                 config.climberRight.setPosition(Hardware.RIGHT_SERVO_BOTTOM);
                 rightS = true;
                 telemetry.addData("right", "low");
             }
-        } else if(operator.dpad_right == ButtonState.PRESSED){
+        }
+        if(operator.dpad_right == ButtonState.PRESSED || operator.dpad_right == ButtonState.HELD){
             config.climberRight.setPosition(Hardware.RIGHT_SERVO_LOWEST);
             telemetry.addData("right", "bottom");
         }
@@ -126,16 +128,19 @@ public class TeleOp extends OpMode {
                 climberB = true;
             }
         }
-        if(!stopperB) {
+        if(!stopperIsOn) {
             if (operator.right_bumper == ButtonState.HELD) {
                 telemetry.addData("POWER", "slow");
-                config.winch1.setPower(operator.right_stick_y / 2);
-                config.winch2.setPower(operator.right_stick_y / 2);
+                config.winch1.setPower(operator.right_stick_y / 3);
+                config.winch2.setPower(operator.right_stick_y / 3);
             } else {
                 telemetry.addData("POWER", "fast");
                 config.winch1.setPower(operator.right_stick_y);
                 config.winch2.setPower(operator.right_stick_y);
             }
+        } else {
+            config.winch1.setPower(0);
+            config.winch2.setPower(0);
         }
 
         config.angler.setPower(angler(driver));
