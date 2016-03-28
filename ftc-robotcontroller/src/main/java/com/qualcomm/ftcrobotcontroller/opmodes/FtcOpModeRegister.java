@@ -18,10 +18,9 @@ public class FtcOpModeRegister implements OpModeRegister {
 
     public void register(OpModeManager manager) {
         if (robot.equals("4290")) {
-            manager.register("TeleOp", TeleOp.class);
-            manager.register("Red", AutoRed.class);
-            manager.register("Blue", AutoBlue.class);
-            manager.register("Go to zone", AutoDriveStraight.class);
+            manager.register("Teleop", TeleOp.class);
+            manager.register("Auto Red", AutoRed.class);
+            manager.register("Auto Blue", AutoBlue.class);
         }
     }
 }
