@@ -1,8 +1,0 @@
-[submodule "ftcandroidlibrary"]
-	path = ftc-lib
-	url = http://github.com/lasarobotics/ftcandroidlibrary
-	branch = master
-[submodule "ftc-vision"]
-	path = ftc-vision
-	url = https://github.com/lasarobotics/ftcvision
-	branch = dev
