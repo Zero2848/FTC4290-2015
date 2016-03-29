@@ -8,20 +8,21 @@ import com.qualcomm.ftcrobotcontroller.Hardware;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class TeleOp extends OpMode {
+public class TeleopPhoenix extends OpMode {
     Hardware config;
     Controller driver, operator;
     boolean grabberdown = false, leftS = false, rightS = false, climberB = false, stopperIsOn = false;
 
     public static double angler(Controller cont) {
         if (cont.y == ButtonState.HELD) {//go up
-            return  .75;
+            return .75;
         } else if (cont.a == ButtonState.HELD) {//go down
             return -.75;
         } else {
             return 0;
         }
     }
+
     public void housekeeping() {
         driver.update(gamepad1);
         operator.update(gamepad2);
@@ -35,7 +36,7 @@ public class TeleOp extends OpMode {
 
         config.leftGrabber.setPosition(Hardware.LEFT_GRABBER_UP);
         config.rightGrabber.setPosition(Hardware.RIGHT_GRABBER_UP);
-        config.navx.zeroYaw();
+        config.navx.reset();
     }
 
     @Override
@@ -45,40 +46,39 @@ public class TeleOp extends OpMode {
         if (operator.a == ButtonState.PRESSED) {
             stopperIsOn = !stopperIsOn;
         }
-        if(stopperIsOn){
+        if (stopperIsOn) {
             config.stopper.setPosition(Hardware.STOPPER_ON);
         } else {
             config.stopper.setPosition(Hardware.STOPPER_OFF);
         }
         telemetry.addData("Stopper", "Off");
-        if(stopperIsOn)
+        if (stopperIsOn)
             telemetry.addData("Stopper", "On");
 
-        if(driver.guide == ButtonState.PRESSED){
-            if(config.rightWheel.getDirection() == DcMotor.Direction.FORWARD){
+        if (driver.guide == ButtonState.PRESSED) {
+            if (config.rightWheel.getDirection() == DcMotor.Direction.FORWARD) {
                 config.rightWheel.setDirection(DcMotor.Direction.REVERSE);
             } else {
                 config.rightWheel.setDirection(DcMotor.Direction.FORWARD);
             }
-            if(config.leftWheel.getDirection() == DcMotor.Direction.FORWARD){
+            if (config.leftWheel.getDirection() == DcMotor.Direction.FORWARD) {
                 config.leftWheel.setDirection(DcMotor.Direction.REVERSE);
             } else {
                 config.leftWheel.setDirection(DcMotor.Direction.FORWARD);
             }
         }
 
-        if(Hardware.navxenabled){
-            telemetry.addData("NON CONVERTED", config.navx.getYaw());
-            telemetry.addData("NavX Yaw:", Auto.convertDegNavX(config.navx.getYaw()));
+        if (Hardware.navxenabled) {
+            telemetry.addData("NON CONVERTED", config.navx.getRotation().x);
+            telemetry.addData("NavX Yaw:", Auto.convertDegNavX(config.navx.getRotation().x));
         }
 
-        if (driver.x == ButtonState.PRESSED){
-            if (grabberdown){
+        if (driver.x == ButtonState.PRESSED) {
+            if (grabberdown) {
                 config.leftGrabber.setPosition(Hardware.LEFT_GRABBER_UP);
                 config.rightGrabber.setPosition(Hardware.RIGHT_GRABBER_UP);
                 grabberdown = false;
-            }
-            else{
+            } else {
                 config.leftGrabber.setPosition(Hardware.LEFT_GRABBER_DOWN);
                 config.rightGrabber.setPosition(Hardware.RIGHT_GRABBER_DOWN);
                 grabberdown = true;
@@ -96,11 +96,11 @@ public class TeleOp extends OpMode {
                 telemetry.addData("right", "low");
             }
         }
-        if(operator.dpad_left == ButtonState.PRESSED || operator.dpad_left == ButtonState.HELD){
+        if (operator.dpad_left == ButtonState.PRESSED || operator.dpad_left == ButtonState.HELD) {
             config.climberLeft.setPosition(Hardware.LEFT_SERVO_LOWEST);
             telemetry.addData("right", "bottom");
         }
-        
+
         if (operator.b == ButtonState.PRESSED) {
             if (rightS) {
                 config.climberRight.setPosition(Hardware.RIGHT_SERVO_TOP);
@@ -112,23 +112,22 @@ public class TeleOp extends OpMode {
                 telemetry.addData("right", "low");
             }
         }
-        if(operator.dpad_right == ButtonState.PRESSED || operator.dpad_right == ButtonState.HELD){
+        if (operator.dpad_right == ButtonState.PRESSED || operator.dpad_right == ButtonState.HELD) {
             config.climberRight.setPosition(Hardware.RIGHT_SERVO_LOWEST);
             telemetry.addData("right", "bottom");
         }
 
 
-        if (operator.y == ButtonState.PRESSED){
-            if (climberB){
+        if (operator.y == ButtonState.PRESSED) {
+            if (climberB) {
                 config.climber.setPosition(Hardware.CLIMBER_BOTTOM);
                 climberB = false;
-            }
-            else{
+            } else {
                 config.climber.setPosition(Hardware.CLIMBER_TOP);
                 climberB = true;
             }
         }
-        if(!stopperIsOn) {
+        if (!stopperIsOn) {
             if (operator.right_bumper == ButtonState.HELD) {
                 telemetry.addData("POWER", "slow");
                 config.winch1.setPower(operator.right_stick_y / 3);
@@ -148,7 +147,7 @@ public class TeleOp extends OpMode {
         telemetry.addData("gl", config.leftGrabber.getPosition());
         telemetry.addData("gr", config.rightGrabber.getPosition());
 
-        if(driver.left_bumper == ButtonState.HELD || driver.right_bumper == ButtonState.HELD) {
+        if (driver.left_bumper == ButtonState.HELD || driver.right_bumper == ButtonState.HELD) {
             telemetry.addData("DRIVE", "SLOW");
             Tank.motor2(config.leftWheel, config.rightWheel, driver.left_stick_y / 4, driver.right_stick_y / 4);
         } else {
@@ -157,9 +156,10 @@ public class TeleOp extends OpMode {
         }
 
     }
+
     public void stop() {
         if (Hardware.navxenabled)
-            config.navx.close();
+            config.navx.stop();
     }
 
 }
