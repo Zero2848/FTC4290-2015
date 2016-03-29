@@ -1,5 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftcrobotcontroller.opmodes.navx.NavXSensorTest;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 
@@ -21,6 +22,8 @@ public class FtcOpModeRegister implements OpModeRegister {
             manager.register("Teleop", TeleOp.class);
             manager.register("Auto Red", AutoRed.class);
             manager.register("Auto Blue", AutoBlue.class);
+            manager.register("NavX Test", NavXTest.class);
+            manager.register("NavX Reader", NavXSensorTest.class);
         }
     }
 }

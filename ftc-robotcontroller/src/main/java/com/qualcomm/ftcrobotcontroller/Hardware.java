@@ -1,6 +1,6 @@
 package com.qualcomm.ftcrobotcontroller;
 
-import com.kauailabs.navx.ftc.AHRS;
+import com.lasarobotics.library.sensor.kauailabs.navx.NavXDevice;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -24,7 +24,7 @@ public class Hardware {
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
     public DcMotor leftWheel, rightWheel, winch1, winch2, angler;
     public Servo climberLeft, climberRight, stopper, climber, leftGrabber, rightGrabber;
-    public AHRS navx;
+    public NavXDevice navx;
 
     public Hardware(HardwareMap hardwareMap) {
         this.leftWheel = hardwareMap.dcMotor.get("l");
@@ -51,10 +51,7 @@ public class Hardware {
         this.rightGrabber.setPosition(RIGHT_GRABBER_UP);
         this.stopper.setPosition(STOPPER_OFF);
         if(navxenabled){
-            navx = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
-                    NAVX_DIM_I2C_PORT,
-                    AHRS.DeviceDataType.kProcessedData,
-                    NAVX_DEVICE_UPDATE_RATE_HZ);
+            navx = new NavXDevice(hardwareMap, "dim", NAVX_DIM_I2C_PORT);
         }
     }
 
