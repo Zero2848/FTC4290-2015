@@ -58,7 +58,7 @@ public class Auto {
         boolean arrived = false;
 
         while(!arrived) {
-            yaw = config.navx.getYaw();
+            yaw = config.navx.getRotation().x;
             Log.d("Yaw", yaw + "");
             telemetry.addData("Yaw", yaw + "");
             telemetry.addData("Target Yaw", deg);
