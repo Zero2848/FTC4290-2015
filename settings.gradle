@@ -1,5 +1,6 @@
 // FTC Apps
-include ':ftc-robotcontroller', ':ftc-library', ':navx-ftc', ':opencv-java', ':ftc-visionlib', ':ftc-cameratest'
+include ':ftc-robotcontroller', ':lib-navx', ':ftc-library', ':opencv-java', ':ftc-visionlib', ':ftc-cameratest'
+project(':lib-navx').projectDir = new File('ftc-lib/lib-navx')
 project(':ftc-library').projectDir = new File('ftc-lib/ftc-library')
 project(':opencv-java').projectDir = new File('ftc-vision/opencv-java')
 project(':ftc-visionlib').projectDir = new File('ftc-vision/ftc-visionlib')

@@ -17,7 +17,7 @@ public class NavXTest extends LinearOpMode {
 
         waitForStart();
         turnToDegNavX(45, .5);
-        config.navx.close();
+        config.navx.stop();
     }
 
     public  float convertDegNavX(float deg) {
@@ -27,7 +27,7 @@ public class NavXTest extends LinearOpMode {
     }
 
     public void turnToDegNavX(int deg, double power) throws InterruptedException {
-        config.navx.zeroYaw();
+        config.navx.reset();
         waitOneFullHardwareCycle();
         config.leftWheel.setPower(-power);
         config.rightWheel.setPower(power);
@@ -37,7 +37,7 @@ public class NavXTest extends LinearOpMode {
         boolean arrived = false;
 
         while(!arrived) {
-            yaw = convertDegNavX(config.navx.getYaw());
+            yaw = convertDegNavX(config.navx.getRotation().x);
             telemetry.addData("Yaw", yaw);
             telemetry.addData("Target Yaw", deg);
             if (MathUtil.inBounds(deg - TOLERANCE_DEGREES, deg + TOLERANCE_DEGREES, yaw))
