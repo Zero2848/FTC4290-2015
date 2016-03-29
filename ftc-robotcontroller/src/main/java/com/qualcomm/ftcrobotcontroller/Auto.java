@@ -48,7 +48,7 @@ public class Auto {
     }
 
     public static void turnToDegNavX(Hardware config, Telemetry telemetry, int deg, double power) throws InterruptedException {
-        config.navx.zeroYaw();
+        config.navx.reset();
         block(500);
         config.leftWheel.setPower(-power);
         config.rightWheel.setPower(power);
