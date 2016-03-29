@@ -1,0 +1,6 @@
+[submodule "ftc-library"]
+	path = ftc-library
+	url = https://github.com/lasarobotics/FTCLibrary.git
+[submodule "ftc-vision"]
+	path = ftc-vision
+	url = https://github.com/lasarobotics/FTCVision.git
