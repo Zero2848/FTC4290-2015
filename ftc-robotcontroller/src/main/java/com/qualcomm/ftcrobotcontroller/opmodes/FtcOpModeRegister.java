@@ -18,12 +18,12 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
 
     public void register(OpModeManager manager) {
-        if (robot.equals("4290")) {
-            manager.register("Teleop", TeleOp.class);
-            manager.register("Auto Red", AutoRed.class);
-            manager.register("Auto Blue", AutoBlue.class);
+        //if (robot.equals("4290")) {
+        manager.register("* Teleop Skunk (v3)", TeleopSkunk.class);
+        manager.register("Teleop Phoenix (v2)", TeleopPhoenix.class);
+        manager.register("Teleop Purplebot", TeleopPurpleBot.class);
             manager.register("NavX Test", NavXTest.class);
             manager.register("NavX Reader", NavXSensorTest.class);
-        }
+        //}
     }
 }
