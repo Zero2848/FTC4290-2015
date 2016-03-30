@@ -3,6 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.lasarobotics.library.controller.ButtonState;
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;
+import com.lasarobotics.library.util.MathUtil;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -18,12 +19,14 @@ public class TeleopSkunk extends OpMode {
     boolean hooked;
     boolean intakeBool;
 
+    double DEADBAND = 0.05;
+
     @Override
     public void init() {
-        leftFront = hardwareMap.dcMotor.get("lf");
-        rightFront = hardwareMap.dcMotor.get("rf");
-        leftBack = hardwareMap.dcMotor.get("lb");
-        rightBack = hardwareMap.dcMotor.get("rb");
+        leftFront = hardwareMap.dcMotor.get("rf");
+        rightFront = hardwareMap.dcMotor.get("lf");
+        leftBack = hardwareMap.dcMotor.get("rb");
+        rightBack = hardwareMap.dcMotor.get("lb");
         winch = hardwareMap.dcMotor.get("winch");
         liftA = hardwareMap.dcMotor.get("liftA");
         liftB = hardwareMap.dcMotor.get("liftB");
@@ -64,11 +67,11 @@ public class TeleopSkunk extends OpMode {
         }
 
         //Winch
-        winch.setPower(two.right_stick_y);
+        winch.setPower(MathUtil.deadband(DEADBAND, two.right_stick_y));
 
         //Lift
-        liftA.setPower(two.left_stick_y);
-        liftB.setPower(-two.left_stick_y);
+        liftA.setPower(MathUtil.deadband(DEADBAND, two.left_stick_y));
+        liftB.setPower(MathUtil.deadband(DEADBAND, -two.left_stick_y));
 
         //Intake
         if (two.a == ButtonState.PRESSED){
@@ -85,6 +88,7 @@ public class TeleopSkunk extends OpMode {
         }
 
 
-        Tank.motor4(leftFront, rightFront, leftBack, rightBack, one.left_stick_y, one.right_stick_y);
+        Tank.motor4(leftFront, rightFront, leftBack, rightBack,
+                MathUtil.deadband(DEADBAND, one.left_stick_y), MathUtil.deadband(DEADBAND, one.right_stick_y));
     }
 }
