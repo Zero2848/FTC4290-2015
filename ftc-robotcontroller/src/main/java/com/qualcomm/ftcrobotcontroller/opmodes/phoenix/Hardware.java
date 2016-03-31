@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller;
+package com.qualcomm.ftcrobotcontroller.opmodes.phoenix;
 
 import com.lasarobotics.library.sensor.kauailabs.navx.NavXDevice;
 import com.qualcomm.robotcore.hardware.DcMotor;

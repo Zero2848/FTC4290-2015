@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.purplebot;
 
 import com.lasarobotics.library.controller.Controller;
 import com.lasarobotics.library.drive.Tank;

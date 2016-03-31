@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.skunk;
 
 import com.lasarobotics.library.controller.ButtonState;
 import com.lasarobotics.library.controller.Controller;
