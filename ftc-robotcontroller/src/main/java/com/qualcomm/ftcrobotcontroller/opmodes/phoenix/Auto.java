@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller;
+package com.qualcomm.ftcrobotcontroller.opmodes.phoenix;
 
 import android.util.Log;
 
@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.robocol.Telemetry;
 public class Auto {
     private static final int TOLERANCE_DEGREES = 5;
 
-    public static void driveTo(Hardware config, Telemetry telemetry,int ticks, double powerLeft, double powerRight) throws InterruptedException {
+    public static void driveTo(Hardware config, Telemetry telemetry, int ticks, double powerLeft, double powerRight) throws InterruptedException {
         resetEncoder(config.leftWheel);
         resetEncoder(config.rightWheel);
         double wheelPosition = 0;
