@@ -1,6 +1,10 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.ftcrobotcontroller.opmodes.skunk.TeleopSkunk;
+import com.qualcomm.ftcrobotcontroller.opmodes.phresh.TeleopSkunk;
+import com.qualcomm.ftcrobotcontroller.opmodes.purplebot.AutoPurplebot;
+import com.qualcomm.ftcrobotcontroller.opmodes.vision.BasicVisionSample;
+import com.qualcomm.ftcrobotcontroller.opmodes.vision.LinearVisionSample;
+import com.qualcomm.ftcrobotcontroller.opmodes.vision.ManualVisionSample;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 
@@ -19,5 +23,9 @@ public class FtcOpModeRegister implements OpModeRegister {
 
     public void register(OpModeManager manager) {
         manager.register("* Teleop Skunk (v3)", TeleopSkunk.class);
+        manager.register("Auto Purplebot", AutoPurplebot.class);
+        manager.register("Basic Vision Test", BasicVisionSample.class);
+        manager.register("Linear Vision Test", LinearVisionSample.class);
+        manager.register("Manual Vision Test", ManualVisionSample.class);
     }
 }
