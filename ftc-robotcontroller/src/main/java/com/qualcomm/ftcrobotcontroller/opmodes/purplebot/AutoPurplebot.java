@@ -1,5 +1,8 @@
 package com.qualcomm.ftcrobotcontroller.opmodes.purplebot;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
+
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.detection.objects.Rectangle;
 import org.lasarobotics.vision.ftc.resq.Beacon;
@@ -15,6 +18,34 @@ import org.opencv.core.Size;
 public class AutoPurplebot extends LinearVisionOpMode {
     //Frame counter
     int frameCount = 0;
+    DcMotor leftFront,leftBack,rightBack,rightFront;
+
+    public static void resetEncoder(DcMotor m) {
+        while (m.getCurrentPosition() != 0) {
+            m.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        }
+        m.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+    }
+
+    public void driveTo(int ticks,double powerl,double powerr) throws InterruptedException {
+        double wheelPosition = 0;
+        while (Math.abs(wheelPosition) < ticks) {
+            wheelPosition = leftFront.getCurrentPosition();
+            telemetry.addData("Wheel at", wheelPosition + " ticks.");
+            leftFront.setPower(powerl);
+            leftBack.setPower(powerl);
+            rightFront.setPower(powerr);
+            rightBack.setPower(powerr);
+            waitOneFullHardwareCycle();
+        }
+        leftBack.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+        waitOneFullHardwareCycle();
+        resetEncoder(leftFront);
+        waitOneFullHardwareCycle();
+    }
 
     private void initVision() throws InterruptedException {
         //Wait for vision to initialize - this should be the first thing you do
@@ -60,12 +91,23 @@ public class AutoPurplebot extends LinearVisionOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        leftFront = hardwareMap.dcMotor.get("lf");
+        rightFront = hardwareMap.dcMotor.get("rf");
+        leftBack = hardwareMap.dcMotor.get("lb");
+        rightBack = hardwareMap.dcMotor.get("rb");
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+
         //Initialize Vision
         initVision();
 
         //Wait for the match to begin
         waitForStart();
-
+        driveTo(8500,-1,-1);
+        sleep(1000);
+        driveTo(600,-1,1);
+        sleep(1000);
+        driveTo(500,-1,-1);
         //Main loop
         //Camera frames and OpenCV analysis will be delivered to this method as quickly as possible
         //This loop will exit once the opmode is closed
