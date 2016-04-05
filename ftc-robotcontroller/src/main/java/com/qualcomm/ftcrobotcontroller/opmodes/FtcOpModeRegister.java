@@ -1,7 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.first.ColorSensorDriver;
-import com.qualcomm.ftcrobotcontroller.opmodes.navigation.EncoderTest;
 import com.qualcomm.ftcrobotcontroller.opmodes.phresh.TeleopSkunk;
 import com.qualcomm.ftcrobotcontroller.opmodes.phresh.Testing;
 import com.qualcomm.ftcrobotcontroller.opmodes.purplebot.AutoPurplebot;
