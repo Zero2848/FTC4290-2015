@@ -1,14 +1,13 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-<<<<<<< HEAD
 import com.qualcomm.ftcrobotcontroller.opmodes.first.ColorSensorDriver;
-=======
 import com.qualcomm.ftcrobotcontroller.opmodes.navigation.EncoderTest;
->>>>>>> beae459aa7f655e5a558c8c811a441a8e6ddb83a
 import com.qualcomm.ftcrobotcontroller.opmodes.phresh.TeleopSkunk;
 import com.qualcomm.ftcrobotcontroller.opmodes.phresh.Testing;
 import com.qualcomm.ftcrobotcontroller.opmodes.purplebot.AutoPurplebot;
+import com.qualcomm.ftcrobotcontroller.opmodes.vision.BasicVisionSample;
 import com.qualcomm.ftcrobotcontroller.opmodes.vision.LinearVisionSample;
+import com.qualcomm.ftcrobotcontroller.opmodes.vision.ManualVisionSample;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 
