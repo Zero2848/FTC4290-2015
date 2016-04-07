@@ -46,4 +46,5 @@ dependencies {
     compile(name: 'WirelessP2p-release', ext: 'aar')
     compile project(':ftc-library')
     compile project(path: ':ftc-visionlib')
+    compile project(':opencv-java')
 }

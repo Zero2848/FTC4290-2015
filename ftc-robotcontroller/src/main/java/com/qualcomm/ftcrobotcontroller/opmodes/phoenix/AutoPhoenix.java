@@ -2,17 +2,25 @@ package com.qualcomm.ftcrobotcontroller.opmodes.phoenix;
 
 import com.lasarobotics.library.sensor.kauailabs.navx.NavXDevice;
 import com.lasarobotics.library.util.MathUtil;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
+
+import org.lasarobotics.vision.android.Cameras;
+import org.lasarobotics.vision.detection.objects.Rectangle;
+import org.lasarobotics.vision.ftc.resq.Beacon;
+import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+import org.lasarobotics.vision.util.ScreenOrientation;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
 
 import android.util.Log;
 
 /**
  * Pheonix (TM) Autonomous
  */
-public class AutoPhoenix extends LinearOpMode {
+public class AutoPhoenix extends LinearVisionOpMode {
     //Frame counter
     int frameCount = 0;
     DcMotor left,right;
@@ -68,20 +76,60 @@ public class AutoPhoenix extends LinearOpMode {
         resetEncoder(right);
         waitOneFullHardwareCycle();
     }
+    private void initVision() throws InterruptedException {
+        waitForVisionStart();
 
+        this.setCamera(Cameras.PRIMARY);
+
+        this.setFrameSize(new Size(900, 900));
+
+        enableExtension(Extensions.BEACON);     //Beacon detection
+        enableExtension(Extensions.ROTATION);   //Automatic screen rotation c
+        rotation.setDefaultOrientation(ScreenOrientation.PORTRAIT);
+        beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+        Rectangle bounds = new Rectangle(new Point(width / 2, height / 2), width - 200, 200);
+        beacon.setAnalysisBounds(bounds);
+    }
     @Override
     public void runOpMode() throws InterruptedException {
         left = hardwareMap.dcMotor.get("l");
         right = hardwareMap.dcMotor.get("r");
         left.setDirection(DcMotor.Direction.REVERSE);
         navx = new NavXDevice(hardwareMap, "dim",NAVX_DIM_I2C_PORT);
+        initVision();
         waitForStart();
         driveTo(500, 1, 1);
         turnToDegNavX(320, -1);
-        driveTo(8000, 1, 1);
+        driveTo(7600, 1, 1);
         turnToDegNavX(315, -1);
         sleep(1000);
-        driveTo(1500, 1, 1);
+        driveTo(800, 1, 1);
         sleep(1000);
+        while (opModeIsActive()) {
+            //Log a few things
+            telemetry.addData("Beacon Color", beacon.getAnalysis().getColorString());
+            telemetry.addData("Beacon Location (Center)", beacon.getAnalysis().getLocationString());
+            telemetry.addData("Beacon Confidence", beacon.getAnalysis().getConfidenceString());
+            telemetry.addData("Rotation Compensation", rotation.getRotationCompensationAngle());
+            telemetry.addData("Frame Rate", fps.getFPSString() + " FPS");
+            telemetry.addData("Frame Size", "Width: " + width + " Height: " + height);
+            telemetry.addData("Frame Counter", frameCount);
+            //You can access the most recent frame data and modify it here using getFrameRgba() or getFrameGray()
+            //Vision will run asynchronously (parallel) to any user code so your programs won't hang
+            //You can use hasNewFrame() to test whether vision processed a new frame
+            //Once you copy the frame, discard it immediately with discardFrame()
+            if (hasNewFrame()) {
+                //Get the frame
+                Mat rgba = getFrameRgba();
+                Mat gray = getFrameGray();
+                //Discard the current frame to allow for the next one to render
+                discardFrame();
+                //Do all of your custom frame processing here
+                //For this demo, let's just add to a frame counter
+                frameCount++;
+            }
+            //Wait for a hardware cycle to allow other processes to run
+            waitOneFullHardwareCycle();
+        }
     }
 }

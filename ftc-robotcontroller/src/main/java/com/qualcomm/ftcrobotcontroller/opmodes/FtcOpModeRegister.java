@@ -1,8 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftcrobotcontroller.opmodes.first.ColorSensorDriver;
 import com.qualcomm.ftcrobotcontroller.opmodes.phoenix.AutoPhoenix;
-import com.qualcomm.ftcrobotcontroller.opmodes.phoenix.AutoPhoenixNav;
-import com.qualcomm.ftcrobotcontroller.opmodes.phoenix.AutoPhoenixNavAsync;
 import com.qualcomm.ftcrobotcontroller.opmodes.phresh.TeleopSkunk;
 import com.qualcomm.ftcrobotcontroller.opmodes.purplebot.AutoPurplebot;
 import com.qualcomm.ftcrobotcontroller.opmodes.vision.BasicVisionSample;
@@ -28,12 +27,9 @@ public class FtcOpModeRegister implements OpModeRegister {
         manager.register("Teleop Skunk", TeleopSkunk.class);
         manager.register("Auto Purplebot", AutoPurplebot.class);
         manager.register("Auto Pheonix", AutoPhoenix.class);
-        manager.register("* Teleop Skunk (v3)", TeleopSkunk.class);
-        manager.register("* Auto PHoenix (v2)", AutoPhoenixNav.class);
-        manager.register("* Auto PHoenix Async (v2)", AutoPhoenixNavAsync.class);
-        manager.register("Auto Purplebot", AutoPurplebot.class);
         manager.register("Basic Vision Test", BasicVisionSample.class);
         manager.register("Linear Vision Test", LinearVisionSample.class);
         manager.register("Manual Vision Test", ManualVisionSample.class);
+        manager.register("Color Test", ColorSensorDriver.class);
     }
 }

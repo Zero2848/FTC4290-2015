@@ -28,7 +28,7 @@ public class AutoPhoenixNav extends LinearOpMode {
         nav = new TankNav(navx, new EncodedMotor[]{left}, new EncodedMotor[]{right}, telemetry);
 
         navx.reset();
-        navx.waitForReset();
+//        navx.waitForReset();
         waitForStart();
 
         nav.rotateInPlace(90.0, 1);
