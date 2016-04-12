@@ -13,8 +13,8 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class TeleopSkunk extends OpMode {
 
-    DcMotor leftFront, rightFront, leftBack, rightBack,liftA,liftB,winch,intake;
-    Servo leftHook,rightHook;
+    DcMotor leftFront, rightFront, leftBack, rightBack, lift, winchA, winchB, intake;
+    Servo leftHook,rightHook, leftRaise, rightRaise;
     Controller one,two;
     boolean hooked;
     boolean intakeBool;
@@ -27,13 +27,15 @@ public class TeleopSkunk extends OpMode {
         rightFront = hardwareMap.dcMotor.get("lf");
         leftBack = hardwareMap.dcMotor.get("rb");
         rightBack = hardwareMap.dcMotor.get("lb");
-        winch = hardwareMap.dcMotor.get("winch");
-        liftA = hardwareMap.dcMotor.get("liftA");
-        liftB = hardwareMap.dcMotor.get("liftB");
+        winchA = hardwareMap.dcMotor.get("winchA");
+        winchB = hardwareMap.dcMotor.get("winchB");
+        lift = hardwareMap.dcMotor.get("lift");
         intake = hardwareMap.dcMotor.get("intake");
 
         leftHook = hardwareMap.servo.get("leftHook");
         rightHook = hardwareMap.servo.get("rightHook");
+        leftRaise = hardwareMap.servo.get("leftRaise");
+        rightRaise = hardwareMap.servo.get("rightRaise");
 
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
@@ -43,6 +45,9 @@ public class TeleopSkunk extends OpMode {
 
         leftHook.setPosition(0);
         rightHook.setPosition(1);
+
+        leftRaise.setPosition(0.6);
+        rightRaise.setPosition(0.4);
     }
 
     @Override
@@ -66,12 +71,22 @@ public class TeleopSkunk extends OpMode {
             rightHook.setPosition(1);
         }
 
+        //Angler
+        if (one.a == ButtonState.PRESSED){
+            leftRaise.setPosition(0.6);
+            rightRaise.setPosition(0.4);
+        }
+        else if (one.y == ButtonState.PRESSED) {
+            leftRaise.setPosition(0);
+            rightRaise.setPosition(1);
+        }
+
         //Winch
-        winch.setPower(MathUtil.deadband(DEADBAND, two.right_stick_y));
+        winchA.setPower(MathUtil.deadband(DEADBAND, two.right_stick_y));
+        winchB.setPower(MathUtil.deadband(DEADBAND, -two.right_stick_y));
 
         //Lift
-        liftA.setPower(MathUtil.deadband(DEADBAND, two.left_stick_y));
-        liftB.setPower(MathUtil.deadband(DEADBAND, -two.left_stick_y));
+        lift.setPower(MathUtil.deadband(DEADBAND, two.left_stick_y));
 
         //Intake
         if (two.a == ButtonState.PRESSED){
