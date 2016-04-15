@@ -1,6 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.first.ColorSensorDriver;
+import com.qualcomm.ftcrobotcontroller.opmodes.navigation.NavXSensorTest;
 import com.qualcomm.ftcrobotcontroller.opmodes.phoenix.AutoPhoenix;
 import com.qualcomm.ftcrobotcontroller.opmodes.phresh.TeleopSkunk;
 import com.qualcomm.ftcrobotcontroller.opmodes.purplebot.AutoPurplebot;
@@ -30,6 +31,7 @@ public class FtcOpModeRegister implements OpModeRegister {
         manager.register("Basic Vision Test", BasicVisionSample.class);
         manager.register("Linear Vision Test", LinearVisionSample.class);
         manager.register("Manual Vision Test", ManualVisionSample.class);
-        manager.register("Color Test", ColorSensorDriver.class);
+        manager.register("Color Sensor Test", ColorSensorDriver.class);
+        manager.register("NavX Test", NavXSensorTest.class);
     }
 }

@@ -80,15 +80,15 @@ public class AutoPhoenix extends LinearVisionOpMode {
         waitForVisionStart();
 
         this.setCamera(Cameras.PRIMARY);
-
         this.setFrameSize(new Size(900, 900));
 
-        enableExtension(Extensions.BEACON);     //Beacon detection
-        enableExtension(Extensions.ROTATION);   //Automatic screen rotation c
+        enableExtension(Extensions.BEACON);
+        enableExtension(Extensions.ROTATION);
+        //enableExtension(Extensions.CAMERA_CONTROL);
         rotation.setDefaultOrientation(ScreenOrientation.PORTRAIT);
         beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
-        Rectangle bounds = new Rectangle(new Point(width / 2, height / 2), width - 200, 200);
-        beacon.setAnalysisBounds(bounds);
+        //Rectangle bounds = new Rectangle(new Point(width / 2, height / 2), width - 200, 200);
+        //beacon.setAnalysisBounds(bounds);
     }
     @Override
     public void runOpMode() throws InterruptedException {
