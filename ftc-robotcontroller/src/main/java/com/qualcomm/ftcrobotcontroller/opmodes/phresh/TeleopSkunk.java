@@ -13,29 +13,31 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class TeleopSkunk extends OpMode {
 
-    DcMotor leftFront, rightFront, leftBack, rightBack, lift, winchA, winchB, intake;
-    Servo leftHook,rightHook, leftRaise, rightRaise;
+    DcMotor leftFront, rightFront, leftBack, rightBack, lift, intake, raiser;
+    Servo leftHook,rightHook, climberDumper, climberReleaser, blockPusher;
     Controller one,two;
     boolean hooked;
     boolean intakeBool;
+    boolean isClimberDumperOut;
+    boolean isClimberReleaserOut;
 
     double DEADBAND = 0.05;
 
     @Override
     public void init() {
-        leftFront = hardwareMap.dcMotor.get("rf");
-        rightFront = hardwareMap.dcMotor.get("lf");
-        leftBack = hardwareMap.dcMotor.get("rb");
-        rightBack = hardwareMap.dcMotor.get("lb");
-        winchA = hardwareMap.dcMotor.get("winchA");
-        winchB = hardwareMap.dcMotor.get("winchB");
+        leftFront = hardwareMap.dcMotor.get("lf");
+        rightFront = hardwareMap.dcMotor.get("rf");
+        leftBack = hardwareMap.dcMotor.get("lb");
+        rightBack = hardwareMap.dcMotor.get("rb");
         lift = hardwareMap.dcMotor.get("lift");
         intake = hardwareMap.dcMotor.get("intake");
+        raiser = hardwareMap.dcMotor.get("raiser");
 
         leftHook = hardwareMap.servo.get("leftHook");
         rightHook = hardwareMap.servo.get("rightHook");
-        leftRaise = hardwareMap.servo.get("leftRaise");
-        rightRaise = hardwareMap.servo.get("rightRaise");
+        climberDumper = hardwareMap.servo.get("climberDumper");
+        climberReleaser = hardwareMap.servo.get("climberReleaser");
+        blockPusher = hardwareMap.servo.get("blockPusher");
 
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
@@ -46,8 +48,12 @@ public class TeleopSkunk extends OpMode {
         leftHook.setPosition(0);
         rightHook.setPosition(1);
 
-        leftRaise.setPosition(0.6);
-        rightRaise.setPosition(0.4);
+        climberDumper.setPosition(1);
+        climberReleaser.setPosition(1);
+        blockPusher.setPosition(0.5);
+
+        isClimberDumperOut = false;
+        isClimberReleaserOut = false;
     }
 
     @Override
@@ -71,22 +77,19 @@ public class TeleopSkunk extends OpMode {
             rightHook.setPosition(1);
         }
 
-        //Angler
-        if (one.a == ButtonState.PRESSED){
-            leftRaise.setPosition(0.6);
-            rightRaise.setPosition(0.4);
+        //Raiser
+        if (one.a == ButtonState.HELD){
+            raiser.setPower(1);
         }
-        else if (one.y == ButtonState.PRESSED) {
-            leftRaise.setPosition(0);
-            rightRaise.setPosition(1);
+        else if (one.y == ButtonState.HELD) {
+            raiser.setPower(-1);
         }
-
-        //Winch
-        winchA.setPower(MathUtil.deadband(DEADBAND, two.right_stick_y));
-        winchB.setPower(MathUtil.deadband(DEADBAND, -two.right_stick_y));
+        else {
+            raiser.setPower(0);
+        }
 
         //Lift
-        lift.setPower(MathUtil.deadband(DEADBAND, two.left_stick_y));
+        lift.setPower(MathUtil.deadband(DEADBAND, two.right_stick_y));
 
         //Intake
         if (two.a == ButtonState.PRESSED){
@@ -102,8 +105,39 @@ public class TeleopSkunk extends OpMode {
             intake.setPower(0);
         }
 
+        if (one.b == ButtonState.PRESSED){
+            if (!isClimberDumperOut){
+                climberDumper.setPosition(0.5);
+                isClimberDumperOut = true;
+            }
+            else{
+                climberDumper.setPosition(0.75);
+                isClimberDumperOut = false;
+            }
+        }
+
+        if (two.b == ButtonState.PRESSED){
+            if(!isClimberReleaserOut){
+                climberReleaser.setPosition(0.25);
+                isClimberReleaserOut = true;
+            }
+            else{
+                climberReleaser.setPosition(0.75);
+                isClimberReleaserOut = false;
+            }
+        }
+
+        if(two.left_stick_x > DEADBAND){
+            blockPusher.setPosition(0);
+        }
+        else if(two.left_stick_x < -DEADBAND){
+            blockPusher.setPosition(1);
+        }
+        else{
+            blockPusher.setPosition(0.5);
+        }
 
         Tank.motor4(leftFront, rightFront, leftBack, rightBack,
-                MathUtil.deadband(DEADBAND, one.left_stick_y), MathUtil.deadband(DEADBAND, one.right_stick_y));
+                MathUtil.deadband(DEADBAND, -one.left_stick_y), MathUtil.deadband(DEADBAND, -one.right_stick_y));
     }
 }
