@@ -64,7 +64,7 @@ public class ColorSensorDriver extends LinearOpMode {
                 colorSensor = hardwareMap.colorSensor.get("lady");
                 break;
             case MODERN_ROBOTICS_I2C:
-                colorSensor = hardwareMap.colorSensor.get("mr");
+                colorSensor = hardwareMap.colorSensor.get("color");
                 break;
         }
 

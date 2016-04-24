@@ -1,34 +1,3 @@
-/* Copyright (c) 2014, 2015 Qualcomm Technologies Inc
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted (subject to the limitations in the disclaimer below) provided that
-the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this list
-of conditions and the following disclaimer.
-
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-Neither the name of Qualcomm Technologies Inc nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.
-
-NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
-LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-
 package com.qualcomm.ftcrobotcontroller.opmodes.vision;
 
 import org.lasarobotics.vision.android.Cameras;
@@ -41,9 +10,14 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 
 /**
- * TeleOp Mode
+ * Manual Vision Sample
  * <p/>
- * Enables control of the robot via the gamepad
+ * Use when you need absolute control of each frame and want to customize
+ * how Vision works for you. In a ManualVisionOpMode, you have far more control
+ * and can even use the entirety of OpenCV for your own custom processing.
+ * <p/>
+ * Please note that you cannot use any Vision Extensions in a ManualVisionOpMode, but you
+ * can still call the extensions' init(), loop(), and frame() methods if you want to use them,
  */
 public class ManualVisionSample extends ManualVisionOpMode {
 
@@ -59,15 +33,22 @@ public class ManualVisionSample extends ManualVisionOpMode {
     public void init() {
         super.init();
 
-        //Initialize all detectors here
+        /* Initialize all detectors here */
         detectorRed = new ColorBlobDetector(lowerBoundRed, upperBoundRed);
         detectorBlue = new ColorBlobDetector(lowerBoundBlue, upperBoundBlue);
 
-        //Set the camera used for detection
+        /**
+         * Set the camera used for detection
+         * PRIMARY = Front-facing, larger camera
+         * SECONDARY = Screen-facing, "selfie" camera :D
+         **/
         this.setCamera(Cameras.PRIMARY);
-        //Set the frame size
-        //Larger = sometimes more accurate, but also much slower
-        //For Testable OpModes, this might make the image appear small - it might be best not to use this
+
+        /**
+         * Set the frame size
+         * Larger = sometimes more accurate, but also much slower
+         * After this method runs, it will set the "width" and "height" of the frame
+         **/
         this.setFrameSize(new Size(900, 900));
     }
 
@@ -76,7 +57,7 @@ public class ManualVisionSample extends ManualVisionOpMode {
         super.loop();
 
         telemetry.addData("Vision FPS", fps.getFPSString());
-        telemetry.addData("Vision Color", colorAnalysis.toString());
+        telemetry.addData("Vision Color", colorAnalysis.getColorString());
         telemetry.addData("Analysis Confidence", colorAnalysis.getConfidenceString());
         telemetry.addData("Vision Size", "Width: " + width + " Height: " + height);
     }
@@ -89,14 +70,13 @@ public class ManualVisionSample extends ManualVisionOpMode {
     @Override
     public Mat frame(Mat rgba, Mat gray) {
         try {
-            //Process the frame for the color blobs
-            detectorRed.process(rgba);
-            detectorBlue.process(rgba);
-
-            //Get color analysis
-            Beacon beacon = new Beacon(Beacon.AnalysisMethod.DEFAULT);
+            //Prepare beacon instance
+            Beacon beacon = new Beacon(Beacon.AnalysisMethod.FAST);
             //You may need to change the Screen Orientation to your preference
-            colorAnalysis = beacon.analyzeFrame(detectorBlue, detectorRed, rgba, gray, ScreenOrientation.LANDSCAPE);
+            ScreenOrientation orientation = ScreenOrientation.LANDSCAPE_REVERSE;
+            //Analyze the frame and return the analysis
+            colorAnalysis = beacon.analyzeFrame(detectorBlue, detectorRed, rgba, gray,
+                    orientation);
         } catch (Exception e) {
             e.printStackTrace();
         }
