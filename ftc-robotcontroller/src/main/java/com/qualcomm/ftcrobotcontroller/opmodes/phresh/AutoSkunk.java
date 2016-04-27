@@ -11,22 +11,20 @@ import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.detection.objects.Rectangle;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.lasarobotics.vision.opmode.LinearVisionOpMode;
-import org.lasarobotics.vision.opmode.VisionOpMode;
 import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
-import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 
 public class AutoSkunk extends LinearVisionOpMode {
+    private static final float TOLERANCE_DEGREES = 1;
+    private static final float OVERSHOOT_DEGREES = 5;
+    private final int NAVX_DIM_I2C_PORT = 0;
     int frameCount = 0;
     DcMotor leftFront, rightFront, leftBack, rightBack, lift, intake, raiser;
     Servo leftHook,rightHook, climberDumper, climberReleaser, blockPusher;
     ColorSensor colorSensor;
     NavXDevice navx;
-    private static final int TOLERANCE_DEGREES = 1;
-    private final int NAVX_DIM_I2C_PORT = 0;
-
 
     public void resetEncoder(DcMotor m) {
         while (m.getCurrentPosition() != 0) {
@@ -54,8 +52,20 @@ public class AutoSkunk extends LinearVisionOpMode {
         while(!arrived) {
             yaw = navx.getRotation().x;
             navx.displayTelemetry(telemetry);
-            if (MathUtil.inBounds(convertDegNavX(deg) - TOLERANCE_DEGREES, convertDegNavX(deg) + TOLERANCE_DEGREES, convertDegNavX(yaw)))
+            if (MathUtil.inBounds(convertDegNavX(deg - TOLERANCE_DEGREES), convertDegNavX(deg + TOLERANCE_DEGREES), convertDegNavX(yaw)))
                 arrived = true;
+            /*else if (Math.signum(power) == 1)
+            {
+                //Rotating clockwise - degrees increasing
+                if (convertDegNavX(deg + OVERSHOOT_DEGREES) < convertDegNavX(yaw))
+                    power = -power;
+            }
+            else if (Math.signum(power) == -1)
+            {
+                //Rotating counterclockwise - degrees decreasing
+                if (convertDegNavX(deg - OVERSHOOT_DEGREES) > convertDegNavX(yaw))
+                    power = -power;
+            }*/
         }
 
         leftFront.setPower(0);
